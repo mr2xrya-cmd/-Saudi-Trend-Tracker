@@ -1,12 +1,12 @@
 import os
 import requests
 import json
+import logging
 import time
 import asyncio
 from datetime import datetime
 from openai import OpenAI
 from playwright.async_api import async_playwright
-import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -123,23 +123,23 @@ async def main():
             report = f"""
 📦 **منتج ترند جديد ({i+1}/20)**
 🔥 **المنتج:** {product}
-📈 **الحالة:** {analysis.get('trend_status', 'بداية الترند')}
-💰 **سعر مخازن:** {m_data['price']} | **المخزون:** {m_data['stock']}
+📈 **الحالة:** {analysis.get("trend_status", "بداية الترند")}
+💰 **سعر مخازن:** {m_data["price"]} | **المخزون:** {m_data["stock"]}
 
 ---
 📊 **تحليل الأرباح:**
-* **السعر المقترح:** {analysis.get('suggested_price')}
-* **الربح المتوقع:** {analysis.get('expected_profit')}
+* **السعر المقترح:** {analysis.get("suggested_price")}
+* **الربح المتوقع:** {analysis.get("expected_profit")}
 
 ---
 🎬 **سكريبت الإعلان (تيك توك):**
-{analysis.get('ad_script')}
+{analysis.get("ad_script")}
 
 ---
 📅 **رادار المناسبات ({seasonality}):**
-{analysis.get('seasonality_tip')}
+{analysis.get("seasonality_tip")}
 
-🔗 [رابط المنتج في مخازن]({m_data['link']})
+🔗 [رابط المنتج في مخازن]({m_data["link"]})
             """
             send_telegram(report)
             await asyncio.sleep(2)
