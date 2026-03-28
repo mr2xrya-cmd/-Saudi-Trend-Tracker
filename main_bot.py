@@ -11,17 +11,15 @@ client = OpenAI()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # استخدام HTML لجعل الروابط أنيقة (مثلاً: <a href='url'>نص</a> )
+    # إرسال نص خام (Plain Text ) لضمان الوصول 100%
     payload = {
         "chat_id": TELEGRAM_CHAT_ID, 
-        "text": msg, 
-        "parse_mode": "HTML",
-        "disable_web_page_preview": True # لتقليل حجم الرسالة وضمان وصولها
+        "text": msg,
+        "disable_web_page_preview": False # للسماح بظهور معاينة بسيطة للرابط
     }
     try:
         r = requests.post(url, json=payload)
-        if r.status_code != 200:
-            print(f"Error: {r.text}")
+        print(f"Result: {r.status_code} - {r.text}")
     except Exception as e:
         print(f"Exception: {e}")
 
@@ -35,7 +33,6 @@ async def main():
         "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
     ]
 
-    current_batch_msg = ""
     for i, product in enumerate(trends):
         prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، وصف تسويقي سريع، وسكريبت تيك توك. أجب بصيغة JSON."
         
@@ -47,25 +44,25 @@ async def main():
             )
             analysis = json.loads(response.choices[0].message.content)
             
-            # بناء نص المنتج بتنسيق HTML أنيق وروابط مخفية
+            # نص بسيط جداً بدون أي رموز HTML لضمان الوصول
             makhazen_link = f"https://m5azn.com/product?search={product.replace(' ', '%20' )}"
             
-            product_info = f"""
-📦 <b>منتج ترند ({i+1}/20)</b>
-🔥 <b>المنتج:</b> {product}
-📈 <b>الحالة:</b> {analysis.get('trend_status', 'بداية الترند')}
-💰 <b>السعر المقترح:</b> {analysis.get('suggested_price', 'حسب السوق')}
-🎯 <b>سكريبت:</b> {analysis.get('ad_script', 'وصف جذاب')[:100]}...
-🔗 <a href='{makhazen_link}'>اضغط هنا لرابط مخازن</a>
+            report = f"""
+📦 منتج ترند ({i+1}/20)
+- المنتج: {product}
+- الحالة: {analysis.get('trend_status', 'بداية الترند')}
+- السعر المقترح: {analysis.get('suggested_price', 'حسب السوق')}
+
+🎯 سكريبت تيك توك:
+{analysis.get('ad_script', 'وصف جذاب')[:150]}...
+
+🔗 رابط مخازن:
+{makhazen_link}
 ----------------------------"""
             
-            current_batch_msg += product_info
-            
-            # إرسال رسالة كل 5 منتجات لضمان عدم الحظر وسهولة القراءة
-            if (i + 1) % 5 == 0:
-                send_telegram(f"🚀 <b>تقرير المنتجات الترند (الجزء { (i+1)//5 }/4)</b>\n" + current_batch_msg)
-                current_batch_msg = "" # تصفير الرسالة للدفعة القادمة
-                await asyncio.sleep(5) # تأخير كافي بين الدفعات
+            send_telegram(report)
+            print(f"Sent product {i+1}")
+            await asyncio.sleep(4) # تأخير كافي جداً لتجنب الحظر
                 
         except Exception as e:
             print(f"Error analyzing {product}: {e}")
