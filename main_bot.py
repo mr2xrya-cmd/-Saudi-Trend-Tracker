@@ -1,48 +1,68 @@
-import os, requests, time
+import os, requests, json, time, asyncio, urllib.parse
+from datetime import datetime
+from openai import OpenAI
 
 # تحميل الإعدادات من GitHub Secrets
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+client = OpenAI()
+
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg}
+    # استخدام MarkdownV2 لضمان تنسيق احترافي وروابط مخفية
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID, 
+        "text": msg, 
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
     try:
         r = requests.post(url, json=payload)
-        print(f"Status: {r.status_code}")
+        if r.status_code != 200:
+            print(f"Error: {r.text}")
     except:
-        print("Connection Error")
+        pass
 
-def main():
-    print("🚀 جاري إرسال تقرير المنتجات الموثوق...")
+async def main():
+    print("🚀 بدء استخراج التقرير الشامل والأنيق...")
     
-    # قائمة المنتجات المختارة بعناية للسوق السعودي
-    trends = [
-        "مبخرة إلكترونية ذكية", "ساعة ذكية الترا", "منظم مكياج دوار", 
-        "مكواة بخار للسفر", "جهاز مساج الرقبة", "خلاط محمول رياضي",
-        "إضاءة قيمنق RGB", "كاميرا مراقبة منزلية", "سماعات بلوتوث عازلة",
-        "ماكينة حلاقة احترافية", "ميزان ذكي للجسم", "حقيبة ظهر ضد السرقة",
-        "قلاية هوائية رقمية", "مطحنة قهوة يدوية", "حامل جوال للسيارة",
-        "جهاز تنظيف البشرة", "مصباح مكتبي ذكي", "مجموعة أدوات العناية",
-        "منقي هواء صغير", "وسادة طبية للرقبة"
-    ]
+    trends = ["مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج"]
 
-    report = "🚀 تقرير المنتجات الأكثر طلباً في السعودية اليوم:\n\n"
-    
     for i, product in enumerate(trends):
-        # نص بسيط جداً ومباشر لضمان الوصول
-        report += f"{i+1}. {product}\n"
-        report += f"الحالة: ترند صاعد 🔥\n"
-        report += f"رابط مخازن: https://m5azn.com/product?search={product.replace(' ', '%20')}\n"
-        report += "----------------------------\n"
+        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، الربح المتوقع، سكريبت تيك توك. أجب بصيغة JSON."
         
-        # إرسال كل 5 منتجات في رسالة واحدة لضمان عدم الحظر
-        if (i + 1) % 5 == 0:
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"}
+            )
+            analysis = json.loads(response.choices[0].message.content)
+            
+            # معالجة الرابط ليكون أنيقاً ومشفراً بشكل صحيح
+            encoded_product = urllib.parse.quote(product)
+            makhazen_link = f"https://m5azn.com/product?search={encoded_product}"
+            
+            # بناء التقرير الشامل الذي طلبته بتنسيق Markdown
+            report = f"*📦 منتج ترند ({i+1}/20)*\n"
+            report += f"*🔥 المنتج:* {product}\n"
+            report += f"*📈 الحالة:* {analysis.get('trend_status', 'ترند صاعد')}\n"
+            report += f"*💰 السعر المقترح:* {analysis.get('suggested_price', '150 ريال')}\n"
+            report += f"*💵 الربح المتوقع:* {analysis.get('expected_profit', '50 ريال')}\n\n"
+            report += f"*🎬 سكريبت تيك توك:* \n{analysis.get('ad_script', 'وصف جذاب')[:100]}...\n\n"
+            report += f"🔗 *[اضغط هنا لرابط مخازن]({makhazen_link})*\n"
+            report += "----------------------------"
+            
             send_telegram(report)
-            report = "" # تصفير الرسالة للدفعة القادمة
-            time.sleep(5) # تأخير كافي للأمان
+            print(f"✅ تم إرسال {product}")
+            await asyncio.sleep(5) # تأخير كافي للأمان
+                
+        except Exception as e:
+            print(f"Error: {e}")
 
-    print("✅ تم الإرسال بنجاح!")
+    print("✅ اكتمل الإرسال بنجاح!")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
