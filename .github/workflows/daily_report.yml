@@ -1,0 +1,27 @@
+name: Saudi Trend Daily Report
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # الساعة 10 صباحاً بتوقيت السعودية (7 بتوقيت جرينتش)
+  workflow_dispatch: # يسمح لك بتشغيل النظام يدوياً في أي وقت
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Run Trend Tracker
+        run: python main_bot.py
