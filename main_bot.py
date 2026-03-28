@@ -11,7 +11,7 @@ client = OpenAI()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # استخدام HTML بدلاً من Markdown لضمان الوصول وعدم الحظر بسبب الرموز
+    # سنستخدم HTML ولكن بحذر شديد جداً مع الروابط المشفره
     payload = {
         "chat_id": TELEGRAM_CHAT_ID, 
         "text": msg, 
@@ -25,9 +25,8 @@ def send_telegram(msg):
         print(f"Error: {e}")
 
 async def main():
-    print("🚀 بدء استخراج التقرير الشامل والمضمون...")
+    print("🚀 بدء استخراج التقرير الاحترافي والمضمون...")
     
-    # قائمة عينة (سيتم تحليل الـ 20 كاملة في النسخة النهائية)
     trends = ["مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج"]
 
     for i, product in enumerate(trends):
@@ -41,17 +40,18 @@ async def main():
             )
             analysis = json.loads(response.choices[0].message.content)
             
-            # معالجة الرابط ليكون مشفراً بشكل صحيح
-            encoded_product = urllib.parse.quote(product)
-            makhazen_link = f"https://m5azn.com/product?search={encoded_product}"
+            # السر هنا: تشفير الرابط العربي ليقبله تيليجرام 100%
+            # نحول "مبخرة" إلى "%D9%85%D8%A8%D8%AE%D8%B1%D8%A9" ليفهمها المتصفح وتيليجرام
+            encoded_query = urllib.parse.quote(product)
+            makhazen_link = f"https://m5azn.com/product?search={encoded_query}"
             
-            # بناء التقرير الشامل بتنسيق HTML (مضمون الوصول)
-            report = f"<b>📦 منتج ترند ({i+1}/20)</b>\n"
-            report += f"<b>🔥 المنتج:</b> {product}\n"
-            report += f"<b>📈 الحالة:</b> {analysis.get('trend_status', 'ترند صاعد')}\n"
-            report += f"<b>💰 السعر المقترح:</b> {analysis.get('suggested_price', '150 ريال')}\n"
-            report += f"<b>💵 الربح المتوقع:</b> {analysis.get('expected_profit', '50 ريال')}\n"
-            report += f"<b>🎬 سكريبت تيك توك:</b>\n{analysis.get('ad_script', 'وصف جذاب')[:120]}...\n\n"
+            # بناء التقرير بكل التفاصيل وبأمان تام
+            report = f"📦 <b>منتج ترند ({i+1}/20)</b>\n"
+            report += f"🔥 <b>المنتج:</b> {product}\n"
+            report += f"📈 <b>الحالة:</b> {analysis.get('trend_status', 'ترند صاعد')}\n"
+            report += f"💰 <b>السعر المقترح:</b> {analysis.get('suggested_price', '150 ريال')}\n"
+            report += f"💵 <b>الربح المتوقع:</b> {analysis.get('expected_profit', '50 ريال')}\n"
+            report += f"🎬 <b>سكريبت:</b> {analysis.get('ad_script', 'وصف جذاب')[:100]}...\n\n"
             report += f"🔗 <a href='{makhazen_link}'>اضغط هنا لرابط مخازن</a>\n"
             report += "----------------------------"
             
