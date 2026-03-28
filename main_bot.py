@@ -11,8 +11,8 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 genai.configure(api_key=GEMINI_KEY)
-# جربنا نغير الموديل لنسخة أضمن
-model = genai.GenerativeModel('gemini-1.5-flash-latest')
+# استخدمنا الاسم الأساسي للموديل
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def send_telegram_pdf(file_path, caption):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
@@ -23,57 +23,73 @@ def send_telegram_pdf(file_path, caption):
             r = requests.post(url, files=files, data=data)
             print(f"✅ رد تيليجرام: {r.status_code}")
     except Exception as e:
-        print(f"❌ خطأ في الإرسال: {e}")
+        print(f"❌ خطأ إرسال تيليجرام: {e}")
 
 def create_pdf(text, filename):
     pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     
     try:
         pdf.add_font('Amiri', '', 'Amiri-Regular.ttf')
-        pdf.set_font('Amiri', '', 14)
+        pdf.set_font('Amiri', '', 12) # صغرنا الخط شوي عشان المساحة
     except:
-        print("⚠️ ملف الخط ناقص! ارفع Amiri-Regular.ttf للمستودع")
-        pdf.set_font('Arial', '', 12)
+        print("⚠️ ملف الخط Amiri-Regular.ttf غير موجود في المستودع!")
+        pdf.set_font('Arial', '', 10)
     
     for line in text.split('\n'):
-        if not line.strip(): 
+        if not line.strip():
             pdf.ln(5)
             continue
         
-        # تنظيف وتحويل النص العربي
+        # تنظيف النص من النجوم والمربعات اللي يحطها جميناي وتخرب التنسيق
+        clean_line = line.replace('*', '').replace('#', '').replace('-', ' ')
+        
         try:
-            reshaped = reshape(line)
+            reshaped = reshape(clean_line)
             bidi_line = get_display(reshaped)
-            # استخدمنا عرض محدد (190) بدل (0) لتفادي مشكلة المساحة
-            pdf.multi_cell(190, 10, bidi_line, align='R')
-        except:
-            continue # تخطي السطر لو فيه مشكلة
+            pdf.multi_cell(180, 8, bidi_line, align='R')
+        except Exception as e:
+            print(f"⚠️ فشل كتابة سطر في PDF: {e}")
+            continue
 
     pdf.output(filename)
 
 async def main():
-    print("🚀 جاري التحليل يا ياسر...")
-    trends = ["مبخرة إلكترونية", "ساعة ذكية", "منظم مكياج"] # جرب بـ 3 أولاً للتأكد
+    print("🚀 يبدو أننا بدأنا العمل يا ياسر...")
+    # جربنا بمنتجين فقط للتأكد من السرعة والوصول
+    trends = ["مبخرة إلكترونية", "ساعة ذكية"] 
     
     report = f"تقرير ترندات السعودية - {datetime.now().strftime('%Y-%m-%d')}\n"
     report += "="*30 + "\n\n"
 
     for product in trends:
         try:
-            prompt = f"حلل منتج {product} للسوق السعودي: السعر، الربح، وفكرة إعلان."
+            print(f"🔍 جاري تحليل: {product}...")
+            prompt = f"حلل منتج {product} للسوق السعودي باختصار: السعر، الربح المتوقع، وفكرة إعلان."
             response = model.generate_content(prompt)
-            report += f"📦 {product}\n{response.text}\n"
-            report += "-"*20 + "\n\n"
-            print(f"✅ خلصنا {product}")
-            await asyncio.sleep(2) # راحة بسيطة للمحرّك
+            
+            if response.text:
+                report += f"📦 {product}\n{response.text}\n"
+                report += "-"*20 + "\n\n"
+                print(f"✅ تم الحصول على نص لـ {product}")
+            else:
+                print(f"⚠️ رد فارغ من الذكاء الاصطناعي لـ {product}")
+                
+            await asyncio.sleep(2)
         except Exception as e:
-            print(f"❌ خطأ في {product}: {e}")
+            print(f"❌ خطأ في API جميناي لـ {product}: {e}")
 
-    file_name = "Saudi_Trend.pdf"
-    create_pdf(report, file_name)
-    send_telegram_pdf(file_name, "✅ أبشر يا ياسر! هذا التقرير الجديد وصل.")
+    # ميزة رهيبة: بنطبع التقرير في الـ Logs عشان تشوفه لو الـ PDF فشل
+    print("\n--- محتوى التقرير النهائي ---")
+    print(report)
+    print("---------------------------\n")
+
+    if len(report) > 100: # تأكد إن فيه محتوى حقيقي
+        file_name = "Saudi_Trend.pdf"
+        create_pdf(report, file_name)
+        send_telegram_pdf(file_name, f"✅ أبشر يا ياسر! تقرير الـ PDF لـ {len(trends)} منتجات.")
+    else:
+        print("❌ التقرير فارغ جداً، لن يتم إنشاء ملف PDF.")
 
 if __name__ == "__main__":
     asyncio.run(main())
