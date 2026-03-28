@@ -1,76 +1,73 @@
-import os, requests, json, time, asyncio
+import os, requests, json, time, asyncio, urllib.parse
 from datetime import datetime
 from openai import OpenAI
-from fpdf import FPDF
 
-# إعدادات الوصول
+# إعدادات الوصول من GitHub Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 client = OpenAI()
 
-class PDF(FPDF):
-    def header(self):
-        self.set_font('Arial', 'B', 15)
-        self.cell(0, 10, 'Saudi Trend Tracker - Daily Report', 0, 1, 'C')
-        self.ln(5)
-
-def send_telegram_pdf(file_path):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
-    with open(file_path, 'rb') as f:
-        files = {'document': f}
-        data = {'chat_id': TELEGRAM_CHAT_ID, 'caption': "✅ أبشر! تقرير الـ 20 منتج ترند كاملاً بكل التفاصيل (PDF)"}
-        r = requests.post(url, files=files, data=data)
-        print(f"Telegram Response: {r.status_code}")
+def send_telegram(msg):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    # استخدام HTML لإخفاء الروابط الطويلة وجعلها أنيقة
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID, 
+        "text": msg, 
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True
+    }
+    try:
+        r = requests.post(url, json=payload)
+        print(f"Status: {r.status_code}")
+    except:
+        pass
 
 async def main():
-    print("🚀 جاري تجهيز تقرير PDF الاحترافي الشامل...")
+    print("🚀 بدء استخراج التقرير الشامل والأنيق (إرسال مضمون)...")
+    
     trends = [
         "مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج",
         "خلاط محمول", "إضاءة قيمنق", "كاميرا مراقبة", "سماعات بلوتوث", "ماكينة حلاقة",
         "ميزان ذكي", "حقيبة ضد السرقة", "قلاية هوائية", "مطحنة قهوة", "حامل جوال",
         "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
     ]
-    
-    pdf = PDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", size=11)
 
     for i, product in enumerate(trends):
-        prompt = f"Analyze '{product}' for Saudi market: Trend Status, Suggested Price, Expected Profit, and TikTok Ad Script. Keep it professional."
+        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، الربح المتوقع، سكريبت تيك توك. أجب بصيغة JSON."
+        
         try:
             response = client.chat.completions.create(
                 model="gpt-4.1-mini",
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"}
             )
-            analysis = response.choices[0].message.content
+            analysis = json.loads(response.choices[0].message.content)
             
-            # كتابة البيانات في الـ PDF
-            pdf.set_text_color(0, 102, 204) # لون أزرق للعنوان
-            pdf.multi_cell(0, 10, txt=f"Product {i+1}: {product}", border=0)
-            pdf.set_text_color(0, 0, 0) # لون أسود للتحليل
-            pdf.multi_cell(0, 8, txt=f"Analysis:\n{analysis}", border=0)
-            pdf.set_text_color(255, 0, 0) # لون أحمر للرابط
-            pdf.multi_cell(0, 8, txt=f"Link: https://m5azn.com/product?search={product.replace(' ', '%20')}", border=0)
-            pdf.ln(5)
-            pdf.cell(0, 0, '', 'T') # خط فاصل
-            pdf.ln(5)
+            # تشفير الرابط ليكون أنيقاً ومخفياً
+            encoded_product = urllib.parse.quote(product)
+            makhazen_link = f"https://m5azn.com/product?search={encoded_product}"
             
-            print(f"✅ Analyzed {product}")
-            await asyncio.sleep(1) # تأخير بسيط للأمان
+            # بناء التقرير الشامل بتنسيق HTML الأنيق
+            report = f"<b>📦 منتج ترند ({i+1}/20)</b>\n"
+            report += f"<b>🔥 المنتج:</b> {product}\n"
+            report += f"<b>📈 الحالة:</b> {analysis.get('trend_status', 'ترند صاعد')}\n"
+            report += f"<b>💰 السعر:</b> {analysis.get('suggested_price', '150 ريال')}\n"
+            report += f"<b>💵 الربح:</b> {analysis.get('expected_profit', '50 ريال')}\n"
+            report += f"<b>🎬 سكريبت:</b> {analysis.get('ad_script', 'وصف جذاب')[:100]}...\n\n"
+            report += f"🔗 <b><a href='{makhazen_link}'>اضغط هنا لرابط مخازن</a></b>\n"
+            report += "----------------------------"
+            
+            send_telegram(report)
+            print(f"✅ Sent {product}")
+            # تأخير كافي جداً (10 ثواني) لضمان عدم الحظر ووصول كل الرسائل
+            await asyncio.sleep(10) 
+                
         except Exception as e:
-            print(f"Error in {product}: {e}")
+            print(f"Error: {e}")
 
-    # حفظ الملف والتأكد من إغلاقه قبل الإرسال
-    pdf_file = "Saudi_Trend_Report.pdf"
-    pdf.output(pdf_file)
-    print("💾 PDF Saved successfully.")
-    
-    # إرسال الملف لتيليجرام
-    send_telegram_pdf(pdf_file)
-    print("✅ PDF Sent to Telegram!")
+    print("✅ اكتمل الإرسال بنجاح!")
 
 if __name__ == "__main__":
     asyncio.run(main())
