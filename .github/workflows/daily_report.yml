@@ -20,14 +20,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          playwright install chromium
+          pip install fpdf2 requests openai
 
       - name: Run Trend Tracker
         env:
-          OPENAI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OPENAI_API_KEY: <LaTex>${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: $</LaTex>{{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          MAKHAZEN_USER: ${{ secrets.MAKHAZEN_USER }}
-          MAKHAZEN_PASS: ${{ secrets.MAKHAZEN_PASS }}
         run: python -u main_bot.py
