@@ -22,6 +22,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install fpdf2 requests openai
 
+      - name: Download Arabic Fonts
+        run: |
+          mkdir -p fonts
+          wget -O fonts/DejaVuSansCondensed.ttf https://github.com/owncloud/docs/raw/master/fonts/dejavu-sans-condensed.ttf
+          wget -O fonts/DejaVuSansCondensed-Bold.ttf https://github.com/collectiveaccess/providence/raw/master/app/fonts/DejaVuSansCondensed-Bold.ttf
+
       - name: Run Trend Tracker
         env:
           OPENAI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
