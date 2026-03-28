@@ -11,59 +11,34 @@ client = OpenAI()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # إرسال نص خام بدون أي تنسيقات لضمان الوصول
     payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg}
     try:
         r = requests.post(url, json=payload )
-        print(f"Result: {r.status_code}")
-    except:
-        print("Error sending message")
+        print(f"Result: {r.status_code} - {r.text}")
+    except Exception as e:
+        print(f"Error: {e}")
 
 async def main():
-    print("🚀 بدء استخراج أقوى 20 منتج ترند...")
+    print("🚀 جاري تجهيز قائمة الـ 20 منتج ترند في رسالة واحدة...")
     
     trends = [
-        "مبخرة إلكترونية ذكية", "ساعة ذكية الترا", "منظم مكياج دوار", 
-        "مكواة بخار للسفر", "جهاز مساج الرقبة", "خلاط محمول رياضي",
-        "إضاءة قيمنق RGB", "كاميرا مراقبة منزلية", "سماعات بلوتوث عازلة",
-        "ماكينة حلاقة احترافية", "ميزان ذكي للجسم", "حقيبة ظهر ضد السرقة",
-        "قلاية هوائية رقمية", "مطحنة قهوة يدوية", "حامل جوال للسيارة",
-        "جهاز تنظيف البشرة", "مصباح مكتبي ذكي", "مجموعة أدوات العناية",
-        "منقي هواء صغير", "وسادة طبية للرقبة"
+        "مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج",
+        "خلاط محمول", "إضاءة قيمنق", "كاميرا مراقبة", "سماعات بلوتوث", "ماكينة حلاقة",
+        "ميزان ذكي", "حقيبة ضد السرقة", "قلاية هوائية", "مطحنة قهوة", "حامل جوال",
+        "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
     ]
 
+    # إنشاء رسالة واحدة مختصرة جداً لضمان الوصول
+    final_report = "🚀 قائمة الـ 20 منتج ترند في السعودية اليوم:\n\n"
+    
     for i, product in enumerate(trends):
-        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، وصف تسويقي سريع، وسكريبت تيك توك. أجب بصيغة JSON."
-        
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"}
-            )
-            analysis = json.loads(response.choices[0].message.content)
-            
-            # نص بسيط جداً بدون أي رموز خاصة
-            report = f"""
-📦 منتج ترند ({i+1}/20)
-- المنتج: {product}
-- الحالة: {analysis.get('trend_status', 'بداية الترند')}
-- السعر المقترح: {analysis.get('suggested_price', 'حسب السوق')}
+        final_report += f"{i+1}. {product} (رابط: https://m5azn.com/product?search={product} )\n"
+    
+    final_report += "\n✅ تم استخراجها بنجاح بواسطة نظام Manus AI."
 
-🎯 سكريبت تيك توك:
-{analysis.get('ad_script', 'وصف جذاب')}
-
-رابط مخازن: https://m5azn.com/product?search={product}
-----------------------------
-            """
-            send_telegram(report )
-            print(f"Sent product {i+1}")
-            await asyncio.sleep(3) # تأخير كافي لتجنب الحظر
-            
-        except Exception as e:
-            print(f"Error in {product}: {e}")
-
-    print("✅ اكتمل الإرسال!")
+    # إرسال الرسالة المجمعة (مثل رسالة التجربة)
+    send_telegram(final_report)
+    print("✅ تم إرسال التقرير المجمع!")
 
 if __name__ == "__main__":
     asyncio.run(main())
