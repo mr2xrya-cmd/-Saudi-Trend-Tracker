@@ -1,3 +1,5 @@
-fpdf2
-requests
 openai
+requests
+fpdf2
+arabic-reshaper
+python-bidi
