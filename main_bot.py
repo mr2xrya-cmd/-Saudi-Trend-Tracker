@@ -11,30 +11,20 @@ client = OpenAI()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # إرسال نص خام (Plain Text ) لضمان الوصول 100%
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID, 
-        "text": msg,
-        "disable_web_page_preview": False # للسماح بظهور معاينة بسيطة للرابط
-    }
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg}
     try:
         r = requests.post(url, json=payload)
-        print(f"Result: {r.status_code} - {r.text}")
-    except Exception as e:
-        print(f"Exception: {e}")
+        print(f"Result: {r.status_code}")
+    except:
+        pass
 
 async def main():
-    print("🚀 بدء استخراج وتحليل الـ 20 منتج ترند...")
+    print("🚀 بدء استخراج التحليلات الذكية...")
     
-    trends = [
-        "مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج",
-        "خلاط محمول", "إضاءة قيمنق", "كاميرا مراقبة", "سماعات بلوتوث", "ماكينة حلاقة",
-        "ميزان ذكي", "حقيبة ضد السرقة", "قلاية هوائية", "مطحنة قهوة", "حامل جوال",
-        "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
-    ]
+    trends = ["مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج"]
 
     for i, product in enumerate(trends):
-        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، وصف تسويقي سريع، وسكريبت تيك توك. أجب بصيغة JSON."
+        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، وصف تسويقي سريع. أجب بصيغة JSON."
         
         try:
             response = client.chat.completions.create(
@@ -44,30 +34,21 @@ async def main():
             )
             analysis = json.loads(response.choices[0].message.content)
             
-            # نص بسيط جداً بدون أي رموز HTML لضمان الوصول
-            makhazen_link = f"https://m5azn.com/product?search={product.replace(' ', '%20' )}"
-            
-            report = f"""
-📦 منتج ترند ({i+1}/20)
-- المنتج: {product}
-- الحالة: {analysis.get('trend_status', 'بداية الترند')}
-- السعر المقترح: {analysis.get('suggested_price', 'حسب السوق')}
-
-🎯 سكريبت تيك توك:
-{analysis.get('ad_script', 'وصف جذاب')[:150]}...
-
-🔗 رابط مخازن:
-{makhazen_link}
-----------------------------"""
+            # نص نقي جداً بدون روابط أو رموز خاصة لضمان العبور
+            report = f"📦 منتج رقم {i+1}\n"
+            report += f"المنتج: {product}\n"
+            report += f"الحالة: {analysis.get('trend_status', 'ترند صاعد')}\n"
+            report += f"السعر المقترح: {analysis.get('suggested_price', '150 ريال')}\n"
+            report += f"نصيحة: {analysis.get('ad_script', 'منتج مربح جداً')[:50]}"
             
             send_telegram(report)
-            print(f"Sent product {i+1}")
-            await asyncio.sleep(4) # تأخير كافي جداً لتجنب الحظر
+            print(f"تم إرسال {product}")
+            await asyncio.sleep(5) # تأخير طويل للأمان
                 
         except Exception as e:
-            print(f"Error analyzing {product}: {e}")
+            print(f"Error: {e}")
 
-    print("✅ اكتمل إرسال التقرير الكامل بنجاح!")
+    print("✅ اكتمل الإرسال!")
 
 if __name__ == "__main__":
     asyncio.run(main())
