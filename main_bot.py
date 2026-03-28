@@ -1,83 +1,77 @@
 import os, requests, json, time, asyncio
 from datetime import datetime
 from openai import OpenAI
+from fpdf import FPDF
+from arabic_reshaper import reshape
+from bidi.algorithm import get_display
 
-# تحميل الإعدادات من GitHub Secrets
-# ملاحظة: تأكد إن أسماء السكرت في GitHub تطابق هذي الأسماء تماماً
+# الإعدادات من GitHub Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# إعداد العميل (تأكد من إعداد الـ Base URL إذا كنت تستخدم Gemini عبر مكتبة OpenAI)
 client = OpenAI(api_key=GEMINI_API_KEY)
 
 def send_telegram_file(file_path, caption):
-    """دالة محسنة لإرسال الملفات مع معالجة أخطاء تيليجرام"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
-    
-    # التيليجرام يرفض الكابشن إذا زاد عن 1024 حرف، هنا نقصه للاحتياط
-    if len(caption) > 1000:
-        caption = caption[:950] + "... (التفاصيل كاملة داخل الملف)"
-
+    if len(caption) > 1000: caption = caption[:950] + "..."
     try:
         with open(file_path, 'rb') as f:
             files = {'document': f}
             data = {'chat_id': TELEGRAM_CHAT_ID, 'caption': caption}
             r = requests.post(url, files=files, data=data)
-            
-            result = r.json()
-            if r.status_code == 200 and result.get("ok"):
-                print("✅ تم إرسال الملف لتيليجرام بنجاح!")
+            res = r.json()
+            if r.status_code == 200 and res.get("ok"):
+                print("✅ تم إرسال الـ PDF بنجاح!")
             else:
-                print(f"❌ فشل الإرسال! كود الخطأ: {r.status_code}")
-                print(f"السبب من تيليجرام: {result.get('description')}")
-                
+                print(f"❌ فشل: {res.get('description')}")
     except Exception as e:
-        print(f"حدث خطأ أثناء محاولة الإرسال: {e}")
+        print(f"Error: {e}")
+
+def generate_pdf(report_content, filename):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # ملاحظة: التيليجرام والـ PDF يحتاجون خط يدعم العربي
+    # إذا ما عندك ملف خط، النص بيطلع رموز. تأكد ترفع ملف خط (مثلاً Amiri-Regular.ttf) لمستودعك
+    try:
+        pdf.add_font('ArabicFont', '', 'Amiri-Regular.ttf')
+        pdf.set_font('ArabicFont', '', 14)
+    except:
+        pdf.set_font('Arial', '', 12) # كحل احتياطي
+
+    for line in report_content.split('\n'):
+        # معالجة النص العربي ليظهر بشكل صحيح
+        reshaped_text = reshape(line)
+        bidi_text = get_display(reshaped_text)
+        pdf.multi_cell(0, 10, bidi_text, align='R')
+    
+    pdf.output(filename)
 
 async def main():
-    print("🚀 جاري توليد التقرير الشامل وتحليله...")
+    print("🚀 جاري تجهيز تقرير الـ PDF الاحترافي...")
+    trends = ["مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج"] # جرب بـ 5 أولاً
     
-    trends = [
-        "مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج",
-        "خلاط محمول", "إضاءة قيمنق", "كاميرا مراقبة", "سماعات بلوتوث", "ماكينة حلاقة",
-        "ميزان ذكي", "حقيبة ضد السرقة", "قلاية هوائية", "مطحنة قهوة", "حامل جوال",
-        "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
-    ]
-    
-    full_report_text = f"🚀 تقرير ترندات السعودية - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-    full_report_text += "="*40 + "\n\n"
+    report_text = f"تقرير ترندات السعودية - {datetime.now().strftime('%Y-%m-%d')}\n"
+    report_text += "="*30 + "\n\n"
 
     for i, product in enumerate(trends):
-        prompt = f"Analyze product '{product}' for Saudi market: Trend Status, Suggested Price, Expected Profit, and TikTok Ad Script. Keep it professional and detailed."
-        
+        prompt = f"Analyze product '{product}' for Saudi market. Short detail."
         try:
-            # استخدمنا موديل GPT-4o-mini أو الموديل المتوفر لديك
             response = client.chat.completions.create(
-                model="gpt-4o-mini", 
+                model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}]
             )
-            analysis_text = response.choices[0].message.content
-            
-            full_report_text += f"📦 المنتج ({i+1}/20): {product}\n"
-            full_report_text += f"{analysis_text}\n"
-            full_report_text += f"🔗 رابط مخازن: https://m5azn.com/product?search={product.replace(' ', '%20')}\n"
-            full_report_text += "-"*30 + "\n\n"
-            
+            analysis = response.choices[0].message.content
+            report_text += f"📦 {product}\n{analysis}\n\n"
             print(f"✅ تم تحليل {product}")
-            await asyncio.sleep(1) # تأخير بسيط لتجنب الـ Rate Limit
-                
+            await asyncio.sleep(1)
         except Exception as e:
-            print(f"Error analyzing {product}: {e}")
+            print(f"Error: {e}")
 
-    # حفظ التقرير في ملف نصي بصيغة UTF-8 ليدعم العربي
-    file_name = "Saudi_Trend_Report.txt"
-    with open(file_name, "w", encoding="utf-8") as f:
-        f.write(full_report_text)
-
-    # إرسال الملف
-    send_telegram_file(file_name, "✅ أبشر يا ياسر! هذا هو تقرير الـ 20 منتج ترند كامل وبالتفصيل.")
-    print("🏁 انتهت العملية.")
+    file_name = "Saudi_Trend_Report.pdf"
+    generate_pdf(report_text, file_name)
+    send_telegram_file(file_name, "✅ أبشر يا ياسر، هذا تقرير الـ PDF جاهز!")
 
 if __name__ == "__main__":
     asyncio.run(main())
