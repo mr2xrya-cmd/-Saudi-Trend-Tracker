@@ -9,22 +9,19 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 client = OpenAI()
 
-def send_telegram(msg):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # نرسل نصاً عادياً (Plain Text) لضمان الوصول 100% وتجنب أخطاء التنسيق
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID, 
-        "text": msg,
-        "disable_web_page_preview": True
-    }
+def send_telegram_file(file_path, caption):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
     try:
-        r = requests.post(url, json=payload)
-        print(f"Status: {r.status_code}")
-    except:
-        pass
+        with open(file_path, 'rb') as f:
+            files = {'document': f}
+            data = {'chat_id': TELEGRAM_CHAT_ID, 'caption': caption}
+            r = requests.post(url, files=files, data=data)
+            print(f"File Status: {r.status_code} - {r.text}")
+    except Exception as e:
+        print(f"Error sending file: {e}")
 
 async def main():
-    print("🚀 بدء استخراج التقرير الشامل والمضمون...")
+    print("🚀 جاري توليد التقرير الشامل في ملف لضمان الوصول...")
     
     trends = [
         "مبخرة إلكترونية", "ساعة ذكية الترا", "منظم مكياج", "مكواة بخار", "جهاز مساج",
@@ -32,40 +29,39 @@ async def main():
         "ميزان ذكي", "حقيبة ضد السرقة", "قلاية هوائية", "مطحنة قهوة", "حامل جوال",
         "تنظيف البشرة", "مصباح ذكي", "أدوات عناية", "منقي هواء", "وسادة طبية"
     ]
+    
+    full_report_text = f"🚀 تقرير ترندات السعودية - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+    full_report_text += "="*40 + "\n\n"
 
     for i, product in enumerate(trends):
-        prompt = f"حلل منتج '{product}' للسوق السعودي: حالة الترند، السعر المقترح، الربح المتوقع، سكريبت تيك توك. أجب بصيغة JSON."
+        prompt = f"Analyze product '{product}' for Saudi market: Trend Status, Suggested Price, Expected Profit, and TikTok Ad Script. Keep it professional and detailed."
         
         try:
             response = client.chat.completions.create(
                 model="gpt-4.1-mini",
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"}
+                messages=[{"role": "user", "content": prompt}]
             )
-            analysis = json.loads(response.choices[0].message.content)
+            analysis_text = response.choices[0].message.content
             
-            # رابط مباشر وبسيط بدون تشفير معقد لضمان عدم انكساره
-            makhazen_link = f"https://m5azn.com/product?search={product.replace(' ', '+')}"
+            full_report_text += f"📦 المنتج ({i+1}/20): {product}\n"
+            full_report_text += f"{analysis_text}\n"
+            full_report_text += f"🔗 رابط مخازن: https://m5azn.com/product?search={product.replace(' ', '%20')}\n"
+            full_report_text += "-"*30 + "\n\n"
             
-            # بناء التقرير الشامل بنص نقي (Plain Text) مضمون الوصول
-            report = f"📦 منتج ترند ({i+1}/20)\n"
-            report += f"🔥 المنتج: {product}\n"
-            report += f"📈 الحالة: {analysis.get('trend_status', 'ترند صاعد')}\n"
-            report += f"💰 السعر المقترح: {analysis.get('suggested_price', '150 ريال')}\n"
-            report += f"💵 الربح المتوقع: {analysis.get('expected_profit', '50 ريال')}\n"
-            report += f"🎬 سكريبت تيك توك:\n{analysis.get('ad_script', 'وصف جذاب')[:100]}...\n\n"
-            report += f"🔗 رابط مخازن:\n{makhazen_link}\n"
-            report += "----------------------------"
-            
-            send_telegram(report)
-            print(f"✅ تم إرسال {product}")
-            # تأخير طويل (15 ثانية) لضمان عدم الحظر ووصول الـ 20 منتجاً تباعاً
-            await asyncio.sleep(15) 
+            print(f"✅ تم تحليل {product}")
+            await asyncio.sleep(1)
                 
         except Exception as e:
             print(f"Error analyzing {product}: {e}")
 
-    print("✅ اكتمل الإرسال بنجاح!")
+    # حفظ التقرير في ملف نصي
+    file_name = "Saudi_Trend_Report.txt"
+    with open(file_name, "w", encoding="utf-8") as f:
+        f.write(full_report_text)
+
+    # إرسال الملف لتيليجرام (هذا النوع لا يتم حظره كـ Spam)
+    send_telegram_file(file_name, "✅ أبشر! هذا هو تقرير الـ 20 منتج ترند كاملاً بكل التفاصيل التي طلبتها.")
+    print("✅ تم إرسال الملف بنجاح!")
 
 if __name__ == "__main__":
     asyncio.run(main())
