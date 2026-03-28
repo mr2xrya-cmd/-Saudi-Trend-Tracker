@@ -1,4 +1,3 @@
 fpdf2
 requests
 openai
-playwright
