@@ -2,8 +2,8 @@ name: Saudi Trend Daily Report
 
 on:
   schedule:
-    - cron: '0 7 * * *' # الساعة 10 صباحاً بتوقيت السعودية (7 بتوقيت جرينتش)
-  workflow_dispatch: # يسمح لك بتشغيل النظام يدوياً في أي وقت
+    - cron: '0 7 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,4 +24,10 @@ jobs:
           playwright install chromium
 
       - name: Run Trend Tracker
+        env:
+          OPENAI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MAKHAZEN_USER: ${{ secrets.MAKHAZEN_USER }}
+          MAKHAZEN_PASS: ${{ secrets.MAKHAZEN_PASS }}
         run: python main_bot.py
