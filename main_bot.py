@@ -6,6 +6,9 @@ import asyncio
 from datetime import datetime
 from openai import OpenAI
 from playwright.async_api import async_playwright
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # تحميل الإعدادات من ملف Config أو البيئة
 try:
@@ -43,7 +46,7 @@ async def get_makhazen_data(product_name):
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         try:
-            await page.goto("https://m5azn.com/login")
+            await page.goto("https://m5azn.com/login" )
             await page.fill("#email", MAKHAZEN_USER)
             await page.fill("#password", MAKHAZEN_PASS)
             await page.click("#loginButton")
@@ -56,13 +59,14 @@ async def get_makhazen_data(product_name):
                 "stock": "متوفر",
                 "link": f"https://m5azn.com/product?search={product_name}"
             }
-            await browser.close()
+            await browser.close( )
             return data
-        except:
+        except Exception as e:
+            logging.error(f"Error getting Makhazen data: {e}")
             await browser.close()
             return {"price": "غير متوفر", "stock": "غير معروف", "link": "https://m5azn.com"}
 
-def analyze_with_ai(product, makhazen_info, seasonality):
+def analyze_with_ai(product, makhazen_info, seasonality ):
     """التحليل الذكي بـ Gemini Pro"""
     prompt = f"""
     المنتج: {product}
@@ -87,21 +91,31 @@ def analyze_with_ai(product, makhazen_info, seasonality):
             response_format={"type": "json_object"}
         )
         return json.loads(response.choices[0].message.content)
-    except:
+    except Exception as e:
+        logging.error(f"Error analyzing with AI: {e}")
         return None
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"})
+    logging.info(f"DEBUG: Sending to chat_id: {TELEGRAM_CHAT_ID}, with token: {TELEGRAM_BOT_TOKEN[:5]}..." )
+    try:
+        response = requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"})
+        response.raise_for_status() # Raise an exception for HTTP errors
+        logging.info(f"DEBUG: Telegram API response status: {response.status_code}")
+        logging.info(f"DEBUG: Telegram API response body: {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"DEBUG: Error sending Telegram message: {e}")
+        if response is not None:
+            logging.error(f"DEBUG: Telegram API error response: {response.text}")
 
 async def main():
-    print("بدء النظام المتكامل...")
+    logging.info("بدء النظام المتكامل...")
     seasonality = get_saudi_seasonality()
     # عينة منتجات ترند (في النسخة الكاملة يتم جلبها آلياً من API التيك توك وجوجل)
     trends = ["مبخرة إلكترونية", "ساعة ذكية", "منظم مكياج", "مكواة سفر", "جهاز مساج"]
     
     for i, product in enumerate(trends):
-        print(f"جاري معالجة المنتج {i+1}: {product}")
+        logging.info(f"جاري معالجة المنتج {i+1}: {product}")
         m_data = await get_makhazen_data(product)
         analysis = analyze_with_ai(product, m_data, seasonality)
         
@@ -129,7 +143,7 @@ async def main():
             """
             send_telegram(report)
             await asyncio.sleep(2)
-    print("تم إرسال التقرير بنجاح!")
+    logging.info("تم إرسال التقرير بنجاح!")
 
 if __name__ == "__main__":
     asyncio.run(main())
