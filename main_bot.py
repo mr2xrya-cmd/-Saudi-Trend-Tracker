@@ -11,14 +11,17 @@ client = OpenAI()
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # استخدام تنسيق HTML بدلاً من Markdown لضمان عدم حدوث أخطاء في الرموز
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "HTML"}
-    requests.post(url, json=payload )
+    # إرسال نص خام بدون أي تنسيقات لضمان الوصول
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg}
+    try:
+        r = requests.post(url, json=payload )
+        print(f"Result: {r.status_code}")
+    except:
+        print("Error sending message")
 
 async def main():
-    print("🚀 بدء استخراج أقوى 20 منتج ترند في السعودية...")
+    print("🚀 بدء استخراج أقوى 20 منتج ترند...")
     
-    # قائمة المنتجات (سيتم تحليلها بالذكاء الاصطناعي)
     trends = [
         "مبخرة إلكترونية ذكية", "ساعة ذكية الترا", "منظم مكياج دوار", 
         "مكواة بخار للسفر", "جهاز مساج الرقبة", "خلاط محمول رياضي",
@@ -40,26 +43,27 @@ async def main():
             )
             analysis = json.loads(response.choices[0].message.content)
             
+            # نص بسيط جداً بدون أي رموز خاصة
             report = f"""
-📦 <b>منتج ترند ({i+1}/20)</b>
-🔥 <b>المنتج:</b> {product}
-📈 <b>الحالة:</b> {analysis.get('trend_status', 'بداية الترند')}
-💰 <b>السعر المقترح:</b> {analysis.get('suggested_price', 'حسب السوق')}
+📦 منتج ترند ({i+1}/20)
+- المنتج: {product}
+- الحالة: {analysis.get('trend_status', 'بداية الترند')}
+- السعر المقترح: {analysis.get('suggested_price', 'حسب السوق')}
 
-🎯 <b>سكريبت سريع (تيك توك):</b>
-{analysis.get('ad_script', 'وصف تسويقي جذاب')}
+🎯 سكريبت تيك توك:
+{analysis.get('ad_script', 'وصف جذاب')}
 
-🔗 <a href="https://m5azn.com/product?search={product}">رابط المنتج في مخازن</a>
+رابط مخازن: https://m5azn.com/product?search={product}
 ----------------------------
             """
             send_telegram(report )
-            print(f"✅ تم إرسال المنتج {i+1}")
-            await asyncio.sleep(2) # تأخير بسيط لتجنب حظر تيليجرام للرسائل السريعة
+            print(f"Sent product {i+1}")
+            await asyncio.sleep(3) # تأخير كافي لتجنب الحظر
             
         except Exception as e:
-            print(f"❌ خطأ في المنتج {product}: {e}")
+            print(f"Error in {product}: {e}")
 
-    print("✅ اكتمل إرسال التقرير بنجاح!")
+    print("✅ اكتمل الإرسال!")
 
 if __name__ == "__main__":
     asyncio.run(main())
