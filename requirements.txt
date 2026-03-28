@@ -1,4 +1,4 @@
-openai
+google-generativeai
 requests
 fpdf2
 arabic-reshaper
