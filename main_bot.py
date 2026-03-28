@@ -81,9 +81,9 @@ def analyze_product(product, index):
 سكريبت تيك توك 15 ثانية:
 [النص الكامل للإعلان]"""
 
-    for attempt in range(3):
+    for attempt in range(5):
         try:
-            logging.info(f"تحليل {index}/10: {product}...")
+            logging.info(f"تحليل {index}/10: {product} (محاولة {attempt+1})...")
             response = client.chat.completions.create(
                 model="gemini-2.5-flash",
                 messages=[{"role": "user", "content": prompt}],
@@ -91,16 +91,19 @@ def analyze_product(product, index):
             )
             return response.choices[0].message.content
         except Exception as e:
-            if "429" in str(e):
-                logging.warning("Rate limit، انتظر 65 ثانية...")
-                time.sleep(65)
-            elif "403" in str(e):
+            error_str = str(e)
+            if "429" in error_str:
+                match = re.search(r'retryDelay.*?(\d+)s', error_str)
+                wait = int(match.group(1)) + 5 if match else 70
+                logging.warning(f"Rate limit، انتظر {wait} ثانية...")
+                time.sleep(wait)
+            elif "403" in error_str and "leaked" in error_str:
                 logging.error("❌ API key مسرّب!")
                 return f"خطأ: API key مسرّب - المنتج: {product}"
             else:
                 logging.error(f"خطأ: {e}")
-                time.sleep(10)
-    return f"تعذر تحليل {product}"
+                time.sleep(15)
+    return f"تعذر تحليل {product} بعد 5 محاولات"
 
 def send_pdf_to_telegram(file_path):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
@@ -122,18 +125,16 @@ def main():
 
     pdfmetrics.registerFont(TTFont("Amiri", font_path))
 
-    # جلب الترندات
     logging.info("🔍 جاري البحث عن أكثر المنتجات ترنداً...")
     trends = get_trending_products()
-    time.sleep(15)
+    time.sleep(20)
 
-    # تحليل كل منتج
     all_results = []
     for i, product in enumerate(trends, 1):
         analysis = analyze_product(product, i)
         all_results.append((product, analysis))
         if i < len(trends):
-            time.sleep(15)
+            time.sleep(20)
 
     # أنماط التصميم
     title_style = ParagraphStyle("title", fontName="Amiri", fontSize=20,
