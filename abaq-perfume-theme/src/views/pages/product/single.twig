@@ -150,6 +150,7 @@
                                     shadow-intensity="1" alt="{{ image.alt }}">
                                 </model-viewer>
                                     {% else %}
+                                <div class="swiper-slide magnify-wrapper homeslider__slide {{ image.video_url?'video-entry':'' }}">
                                 <a data-fslightbox="product_{{ product.id }}"
                                    data-img-id="{{ image.id }}"
                                    data-slid-index="{{ loop.index-1 }}"{% if image.video_url %} data-video-src="{{ image.video_url }}"{% endif %}
@@ -158,7 +159,7 @@
                                    data-type="{{ image.video_type ?? 'image' }}"
                                    href="{{ (image.video_url is iterable ? image.video_url|first : image.video_url)|default(image.url) }}"
                                    aria-label="{{ product.name }}"
-                                   class="swiper-slide magnify-wrapper homeslider__slide {{ image.video_url?'video-entry':'' }}">
+                                   class="block w-full h-full">
                                     {% if loop.first %}
                                         <img id="{{image.id}}" fetchpriority="high" loading="eager" src="{{ image.url }}"
                                              alt="{{ image.alt }}"
@@ -170,6 +171,7 @@
                                              class="h-full object-{{ theme.settings.get('slider_background_size') }} w-full {{ image.three_d_image_url ? 'model-poster' : '' }}">
                                     {% endif %}
                                 </a>
+                                </div>
                             {% endif %}
                         {% endfor %}
                     </div>
