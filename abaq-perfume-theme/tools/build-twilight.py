@@ -162,8 +162,6 @@ SETTINGS = [
    "selected": [{"label": "كاملة (حركة عند التمرير + حركات مستمرة)", "value": "full", "key": key('opt', 'full')}]},
   {"type": "boolean", "format": "switch", "id": "abaq_page_transitions", "label": "انتقال ناعم بين الصفحات", "icon": "sicon-toggle-off",
    "description": "يستخدم تقنية View Transitions الحديثة في المتصفحات الداعمة", "required": False, "value": True, "selected": True},
-  {"type": "boolean", "format": "switch", "id": "abaq_heading_font", "label": "خط عبق الكلاسيكي للعناوين (أميري)", "icon": "sicon-toggle-off",
-   "description": "خط عربي كلاسيكي للعناوين فقط، ويبقى خط المتجر لباقي النصوص", "required": False, "value": True, "selected": True},
   {"type": "boolean", "format": "switch", "id": "abaq_skin", "label": "تطبيق ستايل عبق على الهيدر والفوتر وبطاقات المنتجات", "icon": "sicon-toggle-off",
    "description": None, "required": False, "value": True, "selected": True},
 ]
@@ -188,7 +186,7 @@ for c in COMPONENTS:
     new.append({"key": key(c['path']), "title": c['title'], "icon": c['icon'], "path": c['path'], "is_default": True, "fields": c['fields']})
 d['components'] = new + d['components']
 
-ids = {s['id'] for s in SETTINGS}
+ids = {s['id'] for s in SETTINGS} | {'abaq_heading_font'}
 d['settings'] = [s for s in d['settings'] if s['id'] not in ids] + SETTINGS
 json.dump(d, open('twilight.json', 'w'), ensure_ascii=False, indent=4)
 open('twilight.json', 'a').write('\n')

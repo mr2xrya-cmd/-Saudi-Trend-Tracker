@@ -340,17 +340,6 @@
         {
             "type": "boolean",
             "format": "switch",
-            "id": "abaq_heading_font",
-            "label": "خط عبق الكلاسيكي للعناوين (أميري)",
-            "icon": "sicon-toggle-off",
-            "description": "خط عربي كلاسيكي للعناوين فقط، ويبقى خط المتجر لباقي النصوص",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "boolean",
-            "format": "switch",
             "id": "abaq_skin",
             "label": "تطبيق ستايل عبق على الهيدر والفوتر وبطاقات المنتجات",
             "icon": "sicon-toggle-off",

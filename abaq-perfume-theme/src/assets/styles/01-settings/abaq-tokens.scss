@@ -18,7 +18,7 @@
   /* Brushed-metal gold used for buttons, rules and frames */
   --abaq-metal: linear-gradient(100deg, #9c7633 0%, #e9d3a3 22%, #c79a4b 42%, #f6e7c1 58%, #b48838 78%, #e2c27f 100%);
 
-  /* Headings use the bundled classic Arabic face when enabled (see master.twig) */
+  /* All text uses the store font chosen in Salla's font settings (Raed: --font-main) */
   --abaq-font-display: var(--font-main);
 
   /* Editorial geometry: crisp corners, hairlines */

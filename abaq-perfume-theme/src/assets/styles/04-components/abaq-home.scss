@@ -393,7 +393,7 @@
   &:hover .abaq-sheen { background-position: -30% 0; }
 }
 [dir="ltr"] .abaq-story__media::before { inset: 18px 18px -18px -18px; }
-.abaq-story .abaq-btn { margin-top: 32px; }
+.abaq-story .abaq-btn, .abaq-notes .abaq-btn { margin-top: 32px; }
 .abaq-story__text { margin-top: 20px; line-height: 2.05; color: var(--abaq-muted); font-size: 16px; }
 .abaq-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); margin-top: 36px; border-block: var(--abaq-hairline);
   &__item { display: flex; flex-direction: column-reverse; gap: 4px; padding: 22px 0; padding-inline-end: 16px;

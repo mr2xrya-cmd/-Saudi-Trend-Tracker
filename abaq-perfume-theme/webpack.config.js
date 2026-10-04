@@ -60,7 +60,7 @@ module.exports = {
     plugins: [
         new ThemeWatcher(),
         new MiniCssExtractPlugin(),
-        new CopyPlugin({patterns: [{from: asset('images'), to: public('images')}, {from: asset('fonts'), to: public('fonts')}]}),
+        new CopyPlugin({patterns: [{from: asset('images'), to: public('images')}]}),
     ],
     optimization: {
         minimizer: [
