@@ -14,7 +14,7 @@
 | component.cta_url       | ?string  | Button link                                                   |
 | component.image_first   | bool     | Show the image on the start side                              |
 #}
-{% set image = component.image ?: 'images/abaq/bottle-amber.svg' | asset %}
+{% set image = component.image ?: 'images/abaq/hero-bottle.svg' | asset %}
 {% set layers = [
     {key: 'top',   label: component.top_label   ?: trans('blocks.abaq.notes_top'),   notes: component.top_notes},
     {key: 'heart', label: component.heart_label ?: trans('blocks.abaq.notes_heart'), notes: component.heart_notes},
@@ -54,7 +54,11 @@
 
         <div class="abaq-notes__visual" data-abaq-reveal>
             <div class="abaq-notes__rings" aria-hidden="true"><span></span><span></span><span></span></div>
-            <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.notes_title') }}" loading="lazy" decoding="async" width="600" height="800">
+            <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
+                <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.notes_title') }}" loading="lazy" decoding="async" width="600" height="800">
+                <span class="abaq-glint" aria-hidden="true"></span>
+                <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" loading="lazy" width="600" height="800">
+            </div>
         </div>
     </div>
 </section>

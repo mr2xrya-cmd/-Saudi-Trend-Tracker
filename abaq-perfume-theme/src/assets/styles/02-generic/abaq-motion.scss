@@ -26,8 +26,13 @@
   to   { opacity: 1; transform: none; }
 }
 @keyframes abaq-float {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.5deg); }
-  50%      { transform: translate3d(0, -14px, 0) rotate(1.5deg); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -8px, 0); }
+}
+/* Light band crossing the glass, then a long rest — reads as a real studio glint */
+@keyframes abaq-glint {
+  0%, 62% { background-position: 120% 0; }
+  88%, 100% { background-position: -20% 0; }
 }
 @keyframes abaq-mist {
   0%   { transform: translate3d(0, 30%, 0) scale(0.7); opacity: 0; }
@@ -45,8 +50,8 @@
   to { transform: translate3d(0, 18%, 0) scale(0.92); opacity: 0.35; }
 }
 @keyframes abaq-scroll-dot {
-  0%   { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(14px); opacity: 0; }
+  0%   { transform: translateY(-16px); }
+  100% { transform: translateY(46px); }
 }
 
 /* ---------- Load-time animations (hero) ---------- */
@@ -60,9 +65,10 @@
     animation: abaq-fade-up var(--abaq-dur) var(--abaq-ease) both;
     animation-delay: calc(0.2s + var(--d, 0) * var(--abaq-stagger));
   }
-  .abaq-hero__bottle { animation: abaq-float 7s var(--abaq-ease-in-out) infinite; }
+  .abaq-hero .abaq-product-shot > img:first-child { animation: abaq-float 8s var(--abaq-ease-in-out) infinite; }
+  .abaq-glint { animation: abaq-glint 7s var(--abaq-ease-in-out) infinite; animation-delay: 1.4s; }
   .abaq-mist span    { animation: abaq-mist 9s linear infinite; }
-  .abaq-scroll-hint span { animation: abaq-scroll-dot 1.6s var(--abaq-ease) infinite; }
+  .abaq-scroll-hint span { animation: abaq-scroll-dot 2s var(--abaq-ease-in-out) infinite; }
   .abaq-notes__rings span { animation: abaq-pulse-ring 4.5s var(--abaq-ease) infinite; }
 }
 
@@ -100,7 +106,7 @@
 
 /* ---------- Subtle level: keep reveals, drop ambient loops ---------- */
 .abaq-motion-subtle {
-  .abaq-hero__bottle, .abaq-mist span, .abaq-notes__rings span { animation: none !important; }
+  .abaq-hero .abaq-product-shot > img:first-child, .abaq-glint, .abaq-mist span, .abaq-notes__rings span { animation: none !important; }
 }
 
 /* ---------- Native page transitions (View Transitions API, progressive) ----------

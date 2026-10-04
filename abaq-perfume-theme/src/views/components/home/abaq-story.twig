@@ -18,6 +18,7 @@
          class="s-block s-block--full-bg abaq-section abaq-story {{ component.dark_mode ? 'abaq-story--dark' : '' }}">
     <div class="container abaq-story__grid {{ component.image_end ? 'abaq-story__grid--image-end' : '' }}">
         <figure class="abaq-story__media" data-abaq-reveal="clip">
+            <span class="abaq-sheen" aria-hidden="true"></span>
             <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.story_title') }}" loading="lazy" decoding="async" width="600" height="800">
         </figure>
 

@@ -15,9 +15,22 @@
   --abaq-muted: #5a5048;
   --abaq-muted-on-dark: #c9bfb3;
 
-  --abaq-radius: 18px;
-  --abaq-radius-lg: 28px;
-  --abaq-shadow: 0 30px 60px -30px rgba(20, 17, 15, 0.35);
+  /* Brushed-metal gold used for buttons, rules and frames */
+  --abaq-metal: linear-gradient(100deg, #9c7633 0%, #e9d3a3 22%, #c79a4b 42%, #f6e7c1 58%, #b48838 78%, #e2c27f 100%);
+
+  /* Headings use the bundled classic Arabic face when enabled (see master.twig) */
+  --abaq-font-display: var(--font-main);
+
+  /* Editorial geometry: crisp corners, hairlines */
+  --abaq-radius: 2px;
+  --abaq-radius-lg: 3px;
+  --abaq-hairline: 1px solid rgba(133, 98, 31, 0.28);
+
+  /* Layered, physically plausible shadows (ambient + key + contact) */
+  --abaq-shadow-sm: 0 1px 1px rgba(20, 17, 15, 0.05), 0 2px 4px rgba(20, 17, 15, 0.05), 0 8px 16px -6px rgba(20, 17, 15, 0.1);
+  --abaq-shadow: 0 1px 2px rgba(20, 17, 15, 0.06), 0 6px 12px rgba(20, 17, 15, 0.06), 0 24px 48px -16px rgba(20, 17, 15, 0.22);
+  --abaq-shadow-lg: 0 2px 4px rgba(20, 17, 15, 0.08), 0 12px 24px rgba(20, 17, 15, 0.08), 0 48px 80px -24px rgba(20, 17, 15, 0.35);
+  --abaq-shadow-product: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)) drop-shadow(0 18px 24px rgba(0, 0, 0, 0.28)) drop-shadow(0 40px 50px rgba(0, 0, 0, 0.2));
 
   /* Motion: one easing family, durations by intent */
   --abaq-ease: cubic-bezier(0.22, 1, 0.36, 1);

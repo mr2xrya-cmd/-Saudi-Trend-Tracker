@@ -60,9 +60,13 @@
         </div>
 
         <div class="abaq-hero__visual">
-            <div class="abaq-hero__halo" aria-hidden="true"></div>
-            <img class="abaq-hero__bottle" src="{{ image }}" alt="{{ title }}"
-                 width="600" height="800" fetchpriority="high" decoding="async">
+            <div class="abaq-hero__spot" aria-hidden="true"></div>
+            <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
+                <img class="abaq-hero__bottle" src="{{ image }}" alt="{{ title }}"
+                     width="600" height="800" fetchpriority="high" decoding="async">
+                <span class="abaq-glint" aria-hidden="true"></span>
+                <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" width="600" height="800" decoding="async">
+            </div>
             {% for badge in component.badges %}
                 {% if badge.text %}
                     <span class="abaq-badge abaq-badge--{{ loop.index0 % 4 }}" style="--i:{{ loop.index0 }}">{{ badge.text }}</span>

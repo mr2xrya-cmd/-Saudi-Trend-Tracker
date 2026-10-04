@@ -96,6 +96,13 @@
             --s-radius: .75rem;
         }
     </style>
+    {% if theme.settings.get('abaq_heading_font', true) %}
+        <link rel="preload" href="{{ 'fonts/amiri-arabic-700.woff2' | asset }}" as="font" type="font/woff2" crossorigin>
+        <style>
+            @font-face { font-family: "Abaq Display"; src: url("{{ 'fonts/amiri-arabic-700.woff2' | asset }}") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E; }
+            :root { --abaq-font-display: "Abaq Display", var(--font-main), serif; }
+        </style>
+    {% endif %}
     {% if abaq_motion != 'off' and theme.settings.get('abaq_page_transitions', true) %}
         <style>@view-transition { navigation: auto; }</style>
     {% endif %}

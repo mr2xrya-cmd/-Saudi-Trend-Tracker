@@ -23,6 +23,7 @@
                     <div class="abaq-review__stars" role="img" aria-label="{{ stars }}/5">
                         {% for i in 1..5 %}<i class="sicon-star2 {{ i <= stars ? 'is-on' : '' }}" aria-hidden="true"></i>{% endfor %}
                     </div>
+                    <span class="abaq-review__mark" aria-hidden="true">”</span>
                     <blockquote class="abaq-review__text">{{ item.text }}</blockquote>
                     <figcaption class="abaq-review__author">
                         <span class="abaq-review__avatar" aria-hidden="true">{{ item.name|slice(0, 1) }}</span>

@@ -25,6 +25,7 @@
                 <a href="{{ item.url ?: '#' }}" class="abaq-family-card" data-abaq-reveal style="--i:{{ loop.index0 }}">
                     <div class="abaq-family-card__media">
                         <img src="{{ img }}" alt="{{ item.name }}" loading="lazy" decoding="async" width="600" height="800">
+                        <span class="abaq-sheen" aria-hidden="true"></span>
                     </div>
                     {% if item.tag %}<span class="abaq-family-card__tag">{{ item.tag }}</span>{% endif %}
                     <div class="abaq-family-card__body">

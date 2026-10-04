@@ -162,6 +162,8 @@ SETTINGS = [
    "selected": [{"label": "كاملة (حركة عند التمرير + حركات مستمرة)", "value": "full", "key": key('opt', 'full')}]},
   {"type": "boolean", "format": "switch", "id": "abaq_page_transitions", "label": "انتقال ناعم بين الصفحات", "icon": "sicon-toggle-off",
    "description": "يستخدم تقنية View Transitions الحديثة في المتصفحات الداعمة", "required": False, "value": True, "selected": True},
+  {"type": "boolean", "format": "switch", "id": "abaq_heading_font", "label": "خط عبق الكلاسيكي للعناوين (أميري)", "icon": "sicon-toggle-off",
+   "description": "خط عربي كلاسيكي للعناوين فقط، ويبقى خط المتجر لباقي النصوص", "required": False, "value": True, "selected": True},
   {"type": "boolean", "format": "switch", "id": "abaq_skin", "label": "تطبيق ستايل عبق على الهيدر والفوتر وبطاقات المنتجات", "icon": "sicon-toggle-off",
    "description": None, "required": False, "value": True, "selected": True},
 ]
