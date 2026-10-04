@@ -180,7 +180,7 @@
                             <i class="bg-primary text-white rounded-icon sicon-shipping-fast {{ theme.is_rtl ? 'flip-x':'' }}"></i>
                             {% set is_free=cart.free_shipping_bar.has_free_shipping %}
                             <div class="flex-1">
-                                <h4 class="shipping-item font-bold text-sm mb-1.5">{{ trans('pages.cart.free_shipping') }}</h4>
+                                <h2 class="shipping-item font-bold text-sm mb-1.5">{{ trans('pages.cart.free_shipping') }}</h2>
                                 <p class="shipping-item text-sm font- text-gray-500">
                                         <span id="free-shipping-msg">{{ (is_free
                                             ?trans('pages.cart.has_free_shipping')

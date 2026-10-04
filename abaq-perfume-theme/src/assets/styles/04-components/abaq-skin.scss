@@ -8,6 +8,8 @@
 
   /* Header: ivory glass bar with a hairline gold border */
   .top-navbar { background: var(--abaq-ink); color: var(--abaq-ivory); border-bottom: 1px solid rgba(209, 171, 98, 0.2); }
+  /* Salla's language/currency button ships a light grey fill, which leaves ivory text unreadable on ink */
+  .top-navbar .s-localization-modal-trigger-btn { background: rgba(247, 242, 234, 0.08); color: var(--abaq-ivory); }
   .main-nav-container {
     background: rgba(247, 242, 234, 0.9) !important;
     backdrop-filter: saturate(1.4) blur(14px);
@@ -40,6 +42,10 @@
     h3 { color: var(--abaq-gold-soft); }
     a:hover { color: var(--abaq-gold); }
   }
+
+  /* Tailwind's grey-500 drops to 4.3:1 on the ivory page; the warm muted tone keeps secondary text above 4.5:1 */
+  #main-content .text-gray-500,
+  #main-content .s-rating-stars-reviews { color: var(--abaq-muted); }
 
   ::selection { background: var(--abaq-gold-soft); color: var(--abaq-ink); }
 }
