@@ -1,0 +1,41 @@
+{#
+| Variable                 | Type     | Description                                  |
+|--------------------------|----------|----------------------------------------------|
+| component.title          | ?string  | Section title                                |
+| component.items[].name   | string   | Customer name                                |
+| component.items[].city   | ?string  | Customer city                                |
+| component.items[].stars  | ?int     | Rating from 1 to 5                           |
+| component.items[].text   | string   | Review text                                  |
+| component.items[].scent  | ?string  | Perfume the customer bought                  |
+#}
+{% if component.items|length %}
+<section component-id="{{ componentId }}" data-testid="abaq-testimonials" class="s-block s-block--full-bg abaq-section abaq-testimonials">
+    <div class="container">
+        <header class="abaq-heading" data-abaq-reveal>
+            <span class="abaq-eyebrow">{{ trans('blocks.abaq.reviews_eyebrow') }}</span>
+            <h2 class="abaq-heading__title">{{ component.title ?: trans('blocks.home.testimonials') }}</h2>
+        </header>
+
+        <div class="abaq-reviews">
+            {% for item in component.items %}
+                {% set stars = item.stars ?: 5 %}
+                <figure class="abaq-review" data-abaq-reveal style="--i:{{ loop.index0 % 3 }}">
+                    <div class="abaq-review__stars" role="img" aria-label="{{ stars }}/5">
+                        {% for i in 1..5 %}<i class="sicon-star2 {{ i <= stars ? 'is-on' : '' }}" aria-hidden="true"></i>{% endfor %}
+                    </div>
+                    <blockquote class="abaq-review__text">{{ item.text }}</blockquote>
+                    <figcaption class="abaq-review__author">
+                        <span class="abaq-review__avatar" aria-hidden="true">{{ item.name|slice(0, 1) }}</span>
+                        <span>
+                            <strong>{{ item.name }}</strong>
+                            {% if item.city or item.scent %}
+                                <small>{{ item.city }}{{ item.city and item.scent ? ' · ' : '' }}{{ item.scent }}</small>
+                            {% endif %}
+                        </span>
+                    </figcaption>
+                </figure>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

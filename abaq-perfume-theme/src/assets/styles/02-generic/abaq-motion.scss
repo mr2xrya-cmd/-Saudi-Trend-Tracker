@@ -1,0 +1,122 @@
+/**
+ * Abaq motion layer
+ * -----------------
+ * 1. Modern browsers: native CSS scroll-driven animations (animation-timeline: view()/scroll()),
+ *    zero JavaScript, runs off the main thread.
+ * 2. Older browsers: abaq-motion.js adds `.abaq-io` to <html> and toggles `.is-in` with
+ *    IntersectionObserver.
+ * 3. `prefers-reduced-motion` and the merchant's "motion level" setting (off) disable everything.
+ * Only transform / opacity / clip-path / filter are animated (no layout properties).
+ */
+
+@keyframes abaq-rise {
+  from { opacity: 0; transform: translate3d(0, 36px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes abaq-clip {
+  from { clip-path: inset(18% 12% 18% 12% round var(--abaq-radius-lg)); transform: scale(1.06); }
+  to   { clip-path: inset(0 0 0 0 round var(--abaq-radius-lg)); transform: none; }
+}
+@keyframes abaq-word {
+  from { transform: translate3d(0, 105%, 0) rotate(4deg); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+@keyframes abaq-fade-up {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes abaq-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.5deg); }
+  50%      { transform: translate3d(0, -14px, 0) rotate(1.5deg); }
+}
+@keyframes abaq-mist {
+  0%   { transform: translate3d(0, 30%, 0) scale(0.7); opacity: 0; }
+  25%  { opacity: 0.55; }
+  100% { transform: translate3d(var(--x, 0), -70%, 0) scale(1.5); opacity: 0; }
+}
+@keyframes abaq-pulse-ring {
+  from { transform: scale(0.6); opacity: 0.6; }
+  to   { transform: scale(1.5); opacity: 0; }
+}
+@keyframes abaq-marquee {
+  to { transform: translate3d(calc(var(--abaq-dir, 1) * 50%), 0, 0); }
+}
+@keyframes abaq-hero-parallax {
+  to { transform: translate3d(0, 18%, 0) scale(0.92); opacity: 0.35; }
+}
+@keyframes abaq-scroll-dot {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+
+/* ---------- Load-time animations (hero) ---------- */
+.abaq-motion-on {
+  .abaq-word > span {
+    display: inline-block;
+    animation: abaq-word var(--abaq-dur-slow) var(--abaq-ease) both;
+    animation-delay: calc(0.15s + var(--i, 0) * var(--abaq-stagger));
+  }
+  .abaq-fade-up {
+    animation: abaq-fade-up var(--abaq-dur) var(--abaq-ease) both;
+    animation-delay: calc(0.2s + var(--d, 0) * var(--abaq-stagger));
+  }
+  .abaq-hero__bottle { animation: abaq-float 7s var(--abaq-ease-in-out) infinite; }
+  .abaq-mist span    { animation: abaq-mist 9s linear infinite; }
+  .abaq-scroll-hint span { animation: abaq-scroll-dot 1.6s var(--abaq-ease) infinite; }
+  .abaq-notes__rings span { animation: abaq-pulse-ring 4.5s var(--abaq-ease) infinite; }
+}
+
+/* ---------- Scroll reveal: native scroll-driven animations ---------- */
+@supports (animation-timeline: view()) {
+  .abaq-motion-on:not(.abaq-io) {
+    [data-abaq-reveal] {
+      animation: abaq-rise linear both;
+      animation-timeline: view();
+      animation-range: entry calc(5% + var(--i, 0) * 4%) cover calc(28% + var(--i, 0) * 4%);
+    }
+    [data-abaq-reveal="clip"] {
+      animation-name: abaq-clip;
+      animation-range: entry 0% cover 45%;
+    }
+    /* Hero drifts away as the page scrolls */
+    .abaq-hero__visual {
+      animation: abaq-hero-parallax linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+  }
+}
+
+/* ---------- Fallback: IntersectionObserver (abaq-motion.js) ---------- */
+.abaq-motion-on.abaq-io {
+  [data-abaq-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0);
+    transition: opacity var(--abaq-dur) var(--abaq-ease), transform var(--abaq-dur) var(--abaq-ease);
+    transition-delay: calc(var(--i, 0) * var(--abaq-stagger));
+  }
+  [data-abaq-reveal].is-in { opacity: 1; transform: none; }
+}
+
+/* ---------- Subtle level: keep reveals, drop ambient loops ---------- */
+.abaq-motion-subtle {
+  .abaq-hero__bottle, .abaq-mist span, .abaq-notes__rings span { animation: none !important; }
+}
+
+/* ---------- Native page transitions (View Transitions API, progressive) ----------
+ * The @view-transition opt-in itself is printed in master.twig only when the merchant
+ * enables "page transitions", because it cannot be scoped to a class. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.35s; animation-timing-function: var(--abaq-ease); }
+
+/* ---------- Accessibility: respect reduced motion everywhere ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .abaq-motion-on *,
+  .abaq-motion-on *::before,
+  .abaq-motion-on *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .abaq-motion-on [data-abaq-reveal] { opacity: 1 !important; transform: none !important; }
+  .abaq-marquee__track { animation: none !important; }
+}

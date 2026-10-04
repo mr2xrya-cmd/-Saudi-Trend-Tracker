@@ -1,0 +1,46 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "Cart"
+    },
+    "appBanner": {
+      "download_now": "download now"
+    },
+    "abaq": {
+      "hero_default_title": "Your scent speaks before you do",
+      "families_eyebrow": "Scent families",
+      "families_title": "Find the family that feels like you",
+      "discover": "Discover",
+      "notes_eyebrow": "Fragrance pyramid",
+      "notes_title": "The journey of a scent on your skin",
+      "notes_top": "Top notes",
+      "notes_heart": "Heart notes",
+      "notes_base": "Base notes",
+      "products_eyebrow": "Our picks",
+      "products_title": "Most wanted this season",
+      "story_eyebrow": "Our story",
+      "story_title": "The craft of perfume, rooted in heritage",
+      "reviews_eyebrow": "Customer reviews"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "Cart Options"
+    },
+    "products": {
+      "barcode": "Barcode"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "You can edit or delete your review within",
+      "edit_period_ended": "The period to edit the review has ended",
+      "delete_period_ended": "The period to delete the review has ended",
+      "days_since_added": "days since it was added",
+      "option_name": "Option name",
+      "option_content": "Content"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "Pay for your purchases via one of the following bank cards and get the specified discount",
+    "bank_offer_sub_title_single": "Pay for your purchases via :bank_name bank card and get discount"
+  }
+}

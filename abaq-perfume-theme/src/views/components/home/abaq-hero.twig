@@ -1,0 +1,77 @@
+{#
+| Variable                   | Type     | Description                                                      |
+|----------------------------|----------|------------------------------------------------------------------|
+| component.eyebrow          | ?string  | Small label above the title                                      |
+| component.title            | ?string  | Main headline (each word animates in)                            |
+| component.subtitle         | ?string  | Supporting text                                                  |
+| component.image            | ?string  | Hero product / bottle image (transparent PNG/WebP recommended)   |
+| component.background       | ?string  | Optional background photo                                        |
+| component.cta_text         | ?string  | Primary button label                                             |
+| component.cta_url          | ?string  | Primary button link                                              |
+| component.cta2_text        | ?string  | Secondary button label                                           |
+| component.cta2_url         | ?string  | Secondary button link                                            |
+| component.badges[].text    | string   | Floating scent-note badges around the bottle                     |
+| component.light_mode       | bool     | Light (ivory) background instead of the dark one                 |
+| component.show_mist        | bool     | Animated scent mist behind the bottle                            |
+| component.show_scroll_hint | bool     | Scroll indicator at the bottom                                   |
+| position                   | int      | Sorting number start from zero                                   |
+#}
+{% set image = component.image ?: 'images/abaq/hero-bottle.svg' | asset %}
+{% set title = component.title ?: trans('blocks.abaq.hero_default_title') %}
+<section component-id="{{ componentId }}" data-testid="abaq-hero"
+         class="s-block s-block--full-bg abaq-hero {{ component.light_mode ? 'abaq-hero--light' : 'abaq-hero--dark' }}">
+    {% if component.background %}
+        <div class="abaq-hero__bg" style="background-image: url('{{ component.background }}');" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if component.show_mist is not same as(false) %}
+        <div class="abaq-mist" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    {% endif %}
+
+    <div class="container abaq-hero__inner">
+        <div class="abaq-hero__content">
+            {% if component.eyebrow %}
+                <p class="abaq-eyebrow abaq-fade-up" style="--d:0">{{ component.eyebrow }}</p>
+            {% endif %}
+
+            <h2 class="abaq-hero__title">
+                {% for word in title|split(' ') %}
+                    <span class="abaq-word"><span style="--i:{{ loop.index0 }}">{{ word }}</span></span>
+                {% endfor %}
+            </h2>
+
+            {% if component.subtitle %}
+                <p class="abaq-hero__subtitle abaq-fade-up" style="--d:4">{{ component.subtitle }}</p>
+            {% endif %}
+
+            {% if component.cta_text or component.cta2_text %}
+                <div class="abaq-hero__actions abaq-fade-up" style="--d:6">
+                    {% if component.cta_text %}
+                        <a href="{{ component.cta_url ?: '#' }}" class="abaq-btn abaq-btn--gold">
+                            <span>{{ component.cta_text }}</span>
+                            <i class="sicon-arrow-left abaq-btn__icon" aria-hidden="true"></i>
+                        </a>
+                    {% endif %}
+                    {% if component.cta2_text %}
+                        <a href="{{ component.cta2_url ?: '#' }}" class="abaq-btn abaq-btn--ghost">{{ component.cta2_text }}</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="abaq-hero__visual">
+            <div class="abaq-hero__halo" aria-hidden="true"></div>
+            <img class="abaq-hero__bottle" src="{{ image }}" alt="{{ title }}"
+                 width="600" height="800" fetchpriority="high" decoding="async">
+            {% for badge in component.badges %}
+                {% if badge.text %}
+                    <span class="abaq-badge abaq-badge--{{ loop.index0 % 4 }}" style="--i:{{ loop.index0 }}">{{ badge.text }}</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if component.show_scroll_hint is not same as(false) %}
+        <div class="abaq-scroll-hint" aria-hidden="true"><span></span></div>
+    {% endif %}
+</section>

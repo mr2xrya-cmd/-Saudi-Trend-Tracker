@@ -1,0 +1,45 @@
+/**
+ * Abaq skin — gives the shared Raed building blocks (header, footer, product cards,
+ * page background) the perfume-house look. Applied only when the body carries .abaq-skin
+ * so the merchant can switch it off from the theme settings.
+ */
+.abaq-skin {
+  background-color: var(--abaq-ivory);
+
+  /* Header: ivory glass bar with a hairline gold border */
+  .top-navbar { background: var(--abaq-ink); color: var(--abaq-ivory); border-bottom: 1px solid rgba(209, 171, 98, 0.2); }
+  .main-nav-container {
+    background: rgba(247, 242, 234, 0.9) !important;
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    box-shadow: 0 1px 0 var(--abaq-line) !important;
+  }
+  .main-nav-container .main-menu > li > a,
+  .main-nav-container .menu-item > a { font-weight: 600; letter-spacing: 0.01em; }
+  .main-nav-container .main-menu > li > a { position: relative;
+    &::after { content: ""; position: absolute; inset-inline: 12px; bottom: 10px; height: 1px; background: var(--abaq-gold-deep); transform: scaleX(0); transform-origin: center; transition: transform var(--abaq-dur-fast) var(--abaq-ease); }
+    &:hover::after { transform: scaleX(1); }
+  }
+
+  /* Product cards: soft ivory media, refined price, lift on hover */
+  .s-product-card-entry {
+    border-radius: var(--abaq-radius) !important;
+    background: #fff;
+    border: 1px solid transparent;
+    transition: box-shadow var(--abaq-dur) var(--abaq-ease), transform var(--abaq-dur) var(--abaq-ease), border-color var(--abaq-dur);
+    &:hover { transform: translateY(-4px); box-shadow: var(--abaq-shadow); border-color: var(--abaq-line); }
+  }
+  .s-product-card-image { background: var(--abaq-sand); }
+  .s-product-card-image img { transition: transform 1s var(--abaq-ease); }
+  .s-product-card-entry:hover .s-product-card-image img { transform: scale(1.05); }
+  .s-product-card-content-title a { color: var(--abaq-ink); font-weight: 600; }
+  .s-product-card-price { color: var(--abaq-gold-deep); font-weight: 700; }
+
+  /* Footer: deep ink with gold accents */
+  .store-footer { background: var(--abaq-ink) !important; color: var(--abaq-muted-on-dark);
+    h3 { color: var(--abaq-gold-soft); }
+    a:hover { color: var(--abaq-gold); }
+  }
+
+  ::selection { background: var(--abaq-gold-soft); color: var(--abaq-ink); }
+}

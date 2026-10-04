@@ -1,0 +1,60 @@
+{#
+| Variable                | Type     | Description                                                   |
+|-------------------------|----------|---------------------------------------------------------------|
+| component.title         | ?string  | Section title                                                 |
+| component.description   | ?string  | Section description                                           |
+| component.image         | ?string  | Featured bottle image                                         |
+| component.top_label     | ?string  | Label for top notes (defaults to translated "Top notes")      |
+| component.top_notes     | ?string  | Comma separated top notes (Arabic comma ، also works)         |
+| component.heart_label   | ?string  | Label for heart notes                                         |
+| component.heart_notes   | ?string  | Comma separated heart notes                                   |
+| component.base_label    | ?string  | Label for base notes                                          |
+| component.base_notes    | ?string  | Comma separated base notes                                    |
+| component.cta_text      | ?string  | Button label                                                  |
+| component.cta_url       | ?string  | Button link                                                   |
+| component.image_first   | bool     | Show the image on the start side                              |
+#}
+{% set image = component.image ?: 'images/abaq/bottle-amber.svg' | asset %}
+{% set layers = [
+    {key: 'top',   label: component.top_label   ?: trans('blocks.abaq.notes_top'),   notes: component.top_notes},
+    {key: 'heart', label: component.heart_label ?: trans('blocks.abaq.notes_heart'), notes: component.heart_notes},
+    {key: 'base',  label: component.base_label  ?: trans('blocks.abaq.notes_base'),  notes: component.base_notes}
+] %}
+<section component-id="{{ componentId }}" data-testid="abaq-notes" class="s-block s-block--full-bg abaq-section abaq-notes">
+    <div class="container abaq-notes__grid {{ component.image_first ? 'abaq-notes__grid--image-first' : '' }}">
+        <div class="abaq-notes__content">
+            <header class="abaq-heading abaq-heading--start" data-abaq-reveal>
+                <span class="abaq-eyebrow">{{ trans('blocks.abaq.notes_eyebrow') }}</span>
+                <h2 class="abaq-heading__title">{{ component.title ?: trans('blocks.abaq.notes_title') }}</h2>
+                {% if component.description %}<p class="abaq-heading__desc">{{ component.description }}</p>{% endif %}
+            </header>
+
+            <ol class="abaq-pyramid">
+                {% for layer in layers %}
+                    {% if layer.notes %}
+                        <li class="abaq-pyramid__layer abaq-pyramid__layer--{{ layer.key }}" data-abaq-reveal style="--i:{{ loop.index0 }}">
+                            <span class="abaq-pyramid__index" aria-hidden="true">0{{ loop.index }}</span>
+                            <div>
+                                <h3 class="abaq-pyramid__label">{{ layer.label }}</h3>
+                                <ul class="abaq-pyramid__notes">
+                                    {% for note in layer.notes|replace({'،': ','})|split(',') %}
+                                        {% if note|trim %}<li>{{ note|trim }}</li>{% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+
+            {% if component.cta_text %}
+                <a href="{{ component.cta_url ?: '#' }}" class="abaq-btn abaq-btn--dark" data-abaq-reveal>{{ component.cta_text }}</a>
+            {% endif %}
+        </div>
+
+        <div class="abaq-notes__visual" data-abaq-reveal>
+            <div class="abaq-notes__rings" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.notes_title') }}" loading="lazy" decoding="async" width="600" height="800">
+        </div>
+    </div>
+</section>

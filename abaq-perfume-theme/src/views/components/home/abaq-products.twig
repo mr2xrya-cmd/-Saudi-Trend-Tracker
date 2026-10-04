@@ -1,0 +1,39 @@
+{#
+| Variable                  | Type                  | Description                                 |
+|---------------------------|-----------------------|---------------------------------------------|
+| component.title           | ?string               | Section title                               |
+| component.description     | ?string               | Section description                         |
+| component.products        | Product[] *Collection | Selected products                           |
+| component.display_all_url | ?string               | "View all" link (hidden when empty)         |
+| component.dark_mode       | bool                  | Dark background for this section            |
+| position                  | int                   | Sorting number start from zero              |
+#}
+{% set display_all = component.display_all_url %}
+<section component-id="{{ componentId }}" data-testid="abaq-products"
+         class="s-block s-block--full-bg abaq-section abaq-products {{ component.dark_mode ? 'abaq-products--dark' : '' }}">
+    <div class="container">
+        <header class="abaq-heading abaq-heading--row" data-abaq-reveal>
+            <div>
+                <span class="abaq-eyebrow">{{ trans('blocks.abaq.products_eyebrow') }}</span>
+                <h2 class="abaq-heading__title">{{ component.title ?: trans('blocks.abaq.products_title') }}</h2>
+                {% if component.description %}<p class="abaq-heading__desc">{{ component.description }}</p>{% endif %}
+            </div>
+            {% if display_all and display_all != '#' %}
+                <a href="{{ display_all }}" class="abaq-link">{{ trans('blocks.home.display_all') }} <i class="sicon-arrow-left" aria-hidden="true"></i></a>
+            {% endif %}
+        </header>
+
+        <div class="abaq-products__slider" data-abaq-reveal>
+            <salla-products-slider
+                {% if component.products|length %}
+                    source="selected"
+                    source-value="[{{ component.products|map((product) => product.id)|join(',') }}]"
+                {% else %}
+                    source="latest"
+                {% endif %}
+                block-title=" "
+                slider-id="abaq-products-{{ position }}"
+            ></salla-products-slider>
+        </div>
+    </div>
+</section>

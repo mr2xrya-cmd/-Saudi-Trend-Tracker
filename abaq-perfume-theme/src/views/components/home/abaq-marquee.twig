@@ -1,0 +1,33 @@
+{#
+| Variable               | Type     | Description                                      |
+|------------------------|----------|--------------------------------------------------|
+| component.items[].text | string   | Phrase shown in the moving strip                 |
+| component.items[].icon | ?string  | Optional icon before the phrase                  |
+| component.speed        | ?int     | Seconds for one full loop (bigger = slower)      |
+| component.reverse      | bool     | Move in the opposite direction                   |
+| component.light_mode   | bool     | Ivory strip instead of the dark one              |
+| component.pause_hover  | bool     | Pause the strip when hovered                     |
+#}
+{% set speed = component.speed ?: 30 %}
+{% if component.items|length %}
+<section component-id="{{ componentId }}" data-testid="abaq-marquee"
+         class="s-block s-block--full-bg abaq-marquee {{ component.light_mode ? 'abaq-marquee--light' : '' }} {{ component.reverse ? 'abaq-marquee--reverse' : '' }} {{ component.pause_hover is not same as(false) ? 'abaq-marquee--pausable' : '' }}"
+         style="--abaq-marquee-speed: {{ speed }}s;">
+    <div class="abaq-marquee__track">
+        {# Rendered twice so the loop is seamless; the copy is hidden from screen readers #}
+        {% for copy in 0..1 %}
+            <ul class="abaq-marquee__list" {{ copy ? 'aria-hidden="true"' : '' }}>
+                {% for item in component.items %}
+                    {% if item.text %}
+                        <li class="abaq-marquee__item">
+                            {% if item.icon %}<i class="{{ item.icon }}" aria-hidden="true"></i>{% endif %}
+                            <span>{{ item.text }}</span>
+                            <span class="abaq-marquee__sep" aria-hidden="true">✦</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

@@ -1,0 +1,39 @@
+{#
+| Variable                      | Type     | Description                                         |
+|-------------------------------|----------|-----------------------------------------------------|
+| component.title               | ?string  | Section title                                       |
+| component.description         | ?string  | Section description                                 |
+| component.items[].name        | string   | Scent family name (e.g. Oud, Floral)                |
+| component.items[].description | ?string  | Short description of the family                     |
+| component.items[].image       | ?string  | Card image                                          |
+| component.items[].url         | ?string  | Link (category, tag, page ...)                      |
+| component.items[].tag         | ?string  | Small label on the card (e.g. Best seller)          |
+| component.tilt                | bool     | Subtle 3D tilt on hover (desktop only)              |
+#}
+{% set fallbacks = ['bottle-oud', 'bottle-rose', 'bottle-amber', 'bottle-fresh', 'bottle-musk'] %}
+<section component-id="{{ componentId }}" data-testid="abaq-families" class="s-block s-block--full-bg abaq-section abaq-families">
+    <div class="container">
+        <header class="abaq-heading" data-abaq-reveal>
+            <span class="abaq-eyebrow">{{ trans('blocks.abaq.families_eyebrow') }}</span>
+            <h2 class="abaq-heading__title">{{ component.title ?: trans('blocks.abaq.families_title') }}</h2>
+            {% if component.description %}<p class="abaq-heading__desc">{{ component.description }}</p>{% endif %}
+        </header>
+
+        <div class="abaq-families__grid {{ component.tilt is not same as(false) ? 'abaq-tilt-group' : '' }}">
+            {% for item in component.items %}
+                {% set img = item.image ?: ('images/abaq/' ~ fallbacks[loop.index0 % 5] ~ '.svg') | asset %}
+                <a href="{{ item.url ?: '#' }}" class="abaq-family-card" data-abaq-reveal style="--i:{{ loop.index0 }}">
+                    <div class="abaq-family-card__media">
+                        <img src="{{ img }}" alt="{{ item.name }}" loading="lazy" decoding="async" width="600" height="800">
+                    </div>
+                    {% if item.tag %}<span class="abaq-family-card__tag">{{ item.tag }}</span>{% endif %}
+                    <div class="abaq-family-card__body">
+                        <h3 class="abaq-family-card__name">{{ item.name }}</h3>
+                        {% if item.description %}<p class="abaq-family-card__desc">{{ item.description }}</p>{% endif %}
+                        <span class="abaq-link">{{ trans('blocks.abaq.discover') }} <i class="sicon-arrow-left" aria-hidden="true"></i></span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>

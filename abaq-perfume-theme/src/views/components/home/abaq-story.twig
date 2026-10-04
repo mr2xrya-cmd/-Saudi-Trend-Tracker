@@ -1,0 +1,47 @@
+{#
+| Variable                 | Type     | Description                                                |
+|--------------------------|----------|------------------------------------------------------------|
+| component.image          | ?string  | Story image                                                |
+| component.eyebrow        | ?string  | Small label above the title                                |
+| component.title          | ?string  | Section title                                              |
+| component.text           | ?string  | Story paragraph                                            |
+| component.cta_text       | ?string  | Button label                                               |
+| component.cta_url        | ?string  | Button link                                                |
+| component.stats[].number | int      | Number that counts up when visible                         |
+| component.stats[].suffix | ?string  | Text after the number (e.g. +, %)                          |
+| component.stats[].label  | string   | Stat description                                           |
+| component.image_end      | bool     | Show the image on the end side                             |
+| component.dark_mode      | bool     | Dark background for this section                           |
+#}
+{% set image = component.image ?: 'images/abaq/bottle-oud.svg' | asset %}
+<section component-id="{{ componentId }}" data-testid="abaq-story"
+         class="s-block s-block--full-bg abaq-section abaq-story {{ component.dark_mode ? 'abaq-story--dark' : '' }}">
+    <div class="container abaq-story__grid {{ component.image_end ? 'abaq-story__grid--image-end' : '' }}">
+        <figure class="abaq-story__media" data-abaq-reveal="clip">
+            <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.story_title') }}" loading="lazy" decoding="async" width="600" height="800">
+        </figure>
+
+        <div class="abaq-story__content">
+            <span class="abaq-eyebrow" data-abaq-reveal>{{ component.eyebrow ?: trans('blocks.abaq.story_eyebrow') }}</span>
+            <h2 class="abaq-heading__title" data-abaq-reveal>{{ component.title ?: trans('blocks.abaq.story_title') }}</h2>
+            {% if component.text %}<p class="abaq-story__text" data-abaq-reveal>{{ component.text|nl2br }}</p>{% endif %}
+
+            {% if component.stats|length %}
+                <dl class="abaq-stats">
+                    {% for stat in component.stats %}
+                        <div class="abaq-stats__item" data-abaq-reveal style="--i:{{ loop.index0 }}">
+                            <dt class="abaq-stats__label">{{ stat.label }}</dt>
+                            <dd class="abaq-stats__number">
+                                <span data-abaq-count="{{ stat.number|default(0) }}">{{ stat.number|default(0) }}</span>{{ stat.suffix }}
+                            </dd>
+                        </div>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+
+            {% if component.cta_text %}
+                <a href="{{ component.cta_url ?: '#' }}" class="abaq-btn {{ component.dark_mode ? 'abaq-btn--gold' : 'abaq-btn--dark' }}" data-abaq-reveal>{{ component.cta_text }}</a>
+            {% endif %}
+        </div>
+    </div>
+</section>

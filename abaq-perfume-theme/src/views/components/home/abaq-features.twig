@@ -1,0 +1,26 @@
+{#
+| Variable                | Type     | Description                          |
+|-------------------------|----------|--------------------------------------|
+| component.items[].icon  | ?string  | Feature icon                         |
+| component.items[].title | string   | Feature title                        |
+| component.items[].text  | ?string  | Feature description                  |
+| component.dark_mode     | bool     | Dark background for this section     |
+#}
+{% if component.items|length %}
+<section component-id="{{ componentId }}" data-testid="abaq-features"
+         class="s-block s-block--full-bg abaq-features {{ component.dark_mode ? 'abaq-features--dark' : '' }}">
+    <div class="container">
+        <ul class="abaq-features__list">
+            {% for item in component.items %}
+                <li class="abaq-feature" data-abaq-reveal style="--i:{{ loop.index0 }}">
+                    <span class="abaq-feature__icon" aria-hidden="true"><i class="{{ item.icon ?: 'sicon-star2' }}"></i></span>
+                    <div>
+                        <h3 class="abaq-feature__title">{{ item.title }}</h3>
+                        {% if item.text %}<p class="abaq-feature__text">{{ item.text }}</p>{% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}

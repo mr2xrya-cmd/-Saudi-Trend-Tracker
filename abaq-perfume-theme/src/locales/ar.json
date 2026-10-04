@@ -1,0 +1,46 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "السلة"
+    },
+    "appBanner": {
+      "download_now": "حمله الان"
+    },
+    "abaq": {
+      "hero_default_title": "عطرك يحكي عنك قبل ما تتكلم",
+      "families_eyebrow": "عائلات العطور",
+      "families_title": "اختر العائلة اللي تشبهك",
+      "discover": "اكتشف",
+      "notes_eyebrow": "الهرم العطري",
+      "notes_title": "رحلة العطر على بشرتك",
+      "notes_top": "النوتات العليا",
+      "notes_heart": "نوتات القلب",
+      "notes_base": "النوتات الأساسية",
+      "products_eyebrow": "مختاراتنا",
+      "products_title": "الأكثر طلباً هذا الموسم",
+      "story_eyebrow": "قصتنا",
+      "story_title": "صنعة العطر بأصول عريقة",
+      "reviews_eyebrow": "آراء عملائنا"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "خيارات السلة"
+    },
+    "products": {
+      "barcode": "الباركود"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "يمكنك تعديل أو حذف تقييمك خلال",
+      "edit_period_ended": "تم انتهاء المدة المحددة لتعديل التقييم",
+      "delete_period_ended": "تم انتهاء المدة المحددة لحذف التقييم",
+      "days_since_added": "أيام من إضافته",
+      "option_name": "الخيار",
+      "option_content": "المحتوى"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "ادفع قيمة مشترياتك عبر أحد البطاقات البنكة التالية واحصل على الخصم المحدد",
+    "bank_offer_sub_title_single": "ادفع قيمة مشترياتك عبر أحد بطاقات بنك :bank_name واحصل على خصم بنسبة "
+  }
+}
