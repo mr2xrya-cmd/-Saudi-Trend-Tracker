@@ -1,0 +1,223 @@
+/**
+ * Abaq pages — carries the perfume-house look into the inner store pages:
+ * category / search listing, product page and cart.
+ * Same rules as abaq-skin: applied only when the body carries .abaq-skin, so the
+ * merchant can switch it off. Selectors target Raed's page containers and the
+ * light-DOM classes Twilight components render (s-button-*, s-filters-*, s-cart-*).
+ */
+.abaq-skin {
+  /* ---------- Shared: breadcrumbs, primary buttons, quantity ---------- */
+  .breadcrumbs {
+    font-size: 13px;
+    color: var(--abaq-muted);
+    .s-breadcrumb-item a:hover { color: var(--abaq-gold-deep); }
+    .s-breadcrumb-item:last-child { color: var(--abaq-ink); font-weight: 600; }
+  }
+
+  .container--products-list,
+  .container--product-details,
+  .container--cart,
+  .sticky-product-bar {
+    .s-button-primary.s-button-solid {
+      min-height: 52px;
+      border-radius: var(--abaq-radius);
+      background: var(--abaq-ink);
+      color: var(--abaq-ivory);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--abaq-shadow-sm);
+      transition: background-color var(--abaq-dur-fast) var(--abaq-ease), color var(--abaq-dur-fast), transform var(--abaq-dur-fast) var(--abaq-ease);
+      &:hover:not(:disabled) { background: var(--abaq-ink-3); color: var(--abaq-gold-soft); transform: translateY(-1px); }
+      &:focus-visible { outline: 1px solid var(--abaq-gold-deep); outline-offset: 3px; }
+    }
+    .s-button-primary-outline, .s-button-outline.s-button-primary {
+      border-radius: var(--abaq-radius);
+      border-color: var(--abaq-ink);
+      color: var(--abaq-ink);
+      &:hover:not(:disabled) { background: var(--abaq-ink); color: var(--abaq-ivory); }
+    }
+    .s-quantity-input-container {
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      background: #fff;
+    }
+    .s-quantity-input-button { color: var(--abaq-ink); &:hover { color: var(--abaq-gold-deep); } }
+    .s-quantity-input-input { font-weight: 700; font-variant-numeric: tabular-nums; }
+  }
+
+  /* ---------- Category / search listing ---------- */
+  .container--products-list {
+    #page-main-title {
+      font-family: var(--abaq-font-display);
+      font-size: clamp(24px, 3vw, 36px);
+      line-height: 1.35;
+      color: var(--abaq-ink);
+      text-wrap: balance;
+    }
+    .main-content > .flex:first-child {
+      padding-bottom: 16px;
+      border-bottom: var(--abaq-hairline);
+    }
+    #product-filter {
+      min-height: 42px;
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      background-color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--abaq-ink);
+      &:focus { border-color: var(--abaq-gold-deep); box-shadow: 0 0 0 1px var(--abaq-gold-deep); }
+    }
+    .filters-trigger {
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin-top: 0;
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      background: #fff;
+      i { margin: 0; color: var(--abaq-ink); font-size: 20px; }
+      @media (max-width: 1023px) { display: inline-grid; }
+    }
+
+    /* Filter sidebar: hairline-ruled groups instead of boxed cards */
+    salla-filters {
+      background: transparent;
+      .s-filters-widget-container {
+        margin-bottom: 0;
+        padding-block: 16px;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        border-bottom: var(--abaq-hairline);
+      }
+      .s-filters-widget-title { font-weight: 700; font-size: 15px; color: var(--abaq-ink); }
+      .s-filters-label, .s-filters-option-name { font-size: 14px; color: var(--abaq-muted); }
+      .s-filters-checkbox, .s-filters-radio {
+        border-color: var(--abaq-line);
+        border-radius: 1px;
+        color: var(--abaq-ink);
+        &:checked { background-color: var(--abaq-ink); border-color: var(--abaq-ink); }
+        &:focus { box-shadow: 0 0 0 2px var(--abaq-ivory), 0 0 0 3px var(--abaq-gold-deep); }
+      }
+      .s-filters-widget-more { color: var(--abaq-gold-deep); font-weight: 600; }
+      .s-filters-footer { gap: 10px; }
+    }
+
+    /* Listing grid: even gutters, two columns from the smallest phones */
+    .s-products-list-vertical-cards { gap: clamp(12px, 1.6vw, 20px); }
+    .s-product-card-entry { box-shadow: var(--abaq-shadow-sm); }
+    .s-product-card-content-title a { line-height: 1.6; }
+  }
+
+  /* Mobile filter drawer (Raed opens #filters-menu as a sheet below lg) */
+  @media (max-width: 1023px) {
+    #filters-menu { background: var(--abaq-ivory); }
+    .close-filters { color: var(--abaq-ink); }
+  }
+
+  /* ---------- Product page ---------- */
+  .container--product-details {
+    .details-slider, .image-slider { border-radius: var(--abaq-radius); }
+    .details-slider .swiper-slide, .magnify-wrapper { background: var(--abaq-sand); }
+    [slot="thumbs"] img { border-radius: var(--abaq-radius); }
+    [slot="thumbs"] .swiper-slide-thumb-active img { outline: 1px solid var(--abaq-gold-deep); outline-offset: 2px; }
+
+    .main-content > h1,
+    [data-testid="store-product-title"] {
+      margin-bottom: 14px;
+      font-family: var(--abaq-font-display);
+      font-size: clamp(26px, 3.2vw, 40px);
+      line-height: 1.4;
+      color: var(--abaq-ink);
+      text-wrap: balance;
+    }
+    .product-entry__sub-title { color: var(--abaq-gold-deep); font-weight: 600; letter-spacing: 0.04em; }
+
+    [data-testid="store-product-price"] {
+      margin-block: 14px 6px;
+      padding-block: 14px;
+      border-block: var(--abaq-hairline);
+      p { font-size: clamp(22px, 2.4vw, 28px); color: var(--abaq-ink); font-variant-numeric: tabular-nums; }
+      .text-red-800 { color: var(--abaq-gold-deep) !important; }
+    }
+    .product__description { padding-inline: 0; color: var(--abaq-muted); line-height: 2; font-size: 15px; }
+    .link--primary { color: var(--abaq-gold-deep); font-weight: 600; }
+
+    /* Info panels: white paper on ivory, hairline edge instead of rounded cards */
+    .main-content section.bg-white,
+    .product-form > section.bg-white,
+    .sticky-product-bar {
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      box-shadow: none;
+    }
+    .product-form > section.bg-white + .sticky-product-bar { border-top: 0; }
+    .total-price { color: var(--abaq-ink); font-variant-numeric: tabular-nums; }
+    .total-price.text-red-800 { color: var(--abaq-gold-deep) !important; }
+
+    .btn--wishlist .s-button-element { border-radius: var(--abaq-radius); }
+  }
+
+  /* Sticky add-to-cart bar on phones: ivory glass with a gold hairline */
+  @media (max-width: 767px) {
+    &.is-sticky-product-bar .sticky-product-bar {
+      background: rgba(247, 242, 234, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 0;
+      border-top: 1px solid rgba(133, 98, 31, 0.35);
+      box-shadow: 0 -10px 30px -12px rgba(20, 17, 15, 0.25);
+    }
+  }
+
+  /* ---------- Cart ---------- */
+  .container--cart {
+    .cart-item,
+    .shadow-default.bg-white {
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      box-shadow: none;
+    }
+    .cart-item {
+      transition: box-shadow var(--abaq-dur) var(--abaq-ease);
+      &:hover { box-shadow: var(--abaq-shadow-sm); }
+      img.flex-none { border-radius: var(--abaq-radius); border-color: var(--abaq-line); background: var(--abaq-sand); }
+      h1 { font-weight: 700; color: var(--abaq-ink); line-height: 1.6; }
+      .item-total { color: var(--abaq-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+      .text-primary { color: var(--abaq-gold-deep); }
+    }
+    .item-price.text-red-800 { color: var(--abaq-gold-deep); font-weight: 700; }
+
+    /* Free-shipping progress: a thin gold rule that fills */
+    #free-shipping .rounded-icon { background: var(--abaq-ink); color: var(--abaq-gold-soft); }
+    #free-shipping-bar { height: 4px; background: var(--abaq-sand); }
+    #free-shipping-bar .progress-bg { height: 4px; background: var(--abaq-metal); }
+    #free-shipping-bar .sicon-shipping-fast { color: var(--abaq-gold-deep); }
+
+    .s-cart-coupons-wrapper input { border-radius: var(--abaq-radius); border-color: var(--abaq-line); }
+    .s-cart-coupons-coupon-button-apply { border-radius: var(--abaq-radius); background: var(--abaq-ink); color: var(--abaq-ivory); }
+
+    .s-cart-summary-card--desktop {
+      border: var(--abaq-hairline);
+      border-radius: var(--abaq-radius);
+      box-shadow: var(--abaq-shadow-sm);
+      background: #fff;
+    }
+    .s-cart-summary-card-bar-total { color: var(--abaq-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .s-cart-summary-card-bar-savings-badge { background: var(--abaq-gold-soft); color: var(--abaq-ink); border-radius: var(--abaq-radius); }
+    .s-cart-summary-card-submit .s-button-element,
+    .s-cart-summary-card-action .s-button-element {
+      background: var(--abaq-metal);
+      background-size: 200% 100%;
+      color: var(--abaq-ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 24px -12px rgba(156, 118, 51, 0.8);
+      transition: background-position 0.8s var(--abaq-ease);
+      &:hover:not(:disabled) { background-position: 100% 0; color: var(--abaq-ink); }
+    }
+    .s-cart-summary-card--mobile { border-top: 1px solid rgba(133, 98, 31, 0.35); background: rgba(247, 242, 234, 0.96); }
+
+    .no-content-placeholder .icon { color: var(--abaq-gold-deep); }
+    .no-content-placeholder .btn { border-radius: var(--abaq-radius); border-color: var(--abaq-ink); color: var(--abaq-ink); }
+  }
+}

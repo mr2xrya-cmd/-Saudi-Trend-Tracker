@@ -270,7 +270,20 @@
   background: var(--abaq-ink);
   color: var(--abaq-gold-soft);
   border-block: 1px solid rgba(209, 171, 98, 0.22);
-  &--light { background: var(--abaq-sand); color: var(--abaq-ink); border-color: var(--abaq-line); }
+  --abaq-marquee-bg: var(--abaq-ink);
+  position: relative;
+  /* Soft fade at both edges so the moving text never looks cut off */
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset-block: 0;
+    width: min(12%, 72px);
+    pointer-events: none;
+  }
+  &::before { left: 0; background: linear-gradient(90deg, var(--abaq-marquee-bg), transparent); }
+  &::after { right: 0; background: linear-gradient(270deg, var(--abaq-marquee-bg), transparent); }
+  &--light { --abaq-marquee-bg: var(--abaq-sand); background: var(--abaq-sand); color: var(--abaq-ink); border-color: var(--abaq-line); }
   &--reverse { --abaq-dir: -1; }
   &__track { display: flex; width: max-content; animation: abaq-marquee var(--abaq-marquee-speed, 30s) linear infinite; }
   &--pausable:hover &__track { animation-play-state: paused; }
@@ -425,7 +438,7 @@
 }
 
 /* ---------- Features ---------- */
-.abaq-features { margin-bottom: 0 !important; padding-block: 34px; background: #fff; border-block: var(--abaq-hairline);
+.abaq-features { margin-bottom: 0 !important; padding-block: 34px; background: var(--abaq-ivory); border-block: var(--abaq-hairline);
   &--dark { background: var(--abaq-ink); border-color: transparent;
     .abaq-feature__title { color: var(--abaq-ivory); }
     .abaq-feature__text { color: var(--abaq-muted-on-dark); }
@@ -466,4 +479,16 @@
   .abaq-pyramid__layer { grid-template-columns: 44px 1fr; }
   .abaq-btn { width: 100%; }
   .abaq-stats__item + .abaq-stats__item { padding-inline-start: 12px; }
+  /* Hero note labels: keep a gutter from the screen edge */
+  .abaq-badge {
+    &--0, &--2 { inset-inline-start: 12px; }
+    &--1, &--3 { inset-inline-end: 12px; }
+  }
+  /* Story frame: smaller offset so it stays inside the page gutter */
+  .abaq-story__media { margin-inline-end: 10px; margin-bottom: 10px; &::before { inset: 10px -10px -10px 10px; } }
+  [dir="ltr"] .abaq-story__media::before { inset: 10px 10px -10px -10px; }
+  /* Store features: 2 x 2 instead of four tall rows */
+  .abaq-features__list { grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
+  .abaq-feature { flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 14px 4px; }
+  .abaq-feature__icon { width: 36px; height: 36px; font-size: 20px; }
 }
