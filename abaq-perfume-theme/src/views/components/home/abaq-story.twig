@@ -13,13 +13,17 @@
 | component.image_end      | bool     | Show the image on the end side                             |
 | component.dark_mode      | bool     | Dark background for this section                           |
 #}
-{% set image = component.image ?: 'images/abaq/bottle-oud.svg' | asset %}
+{% set image = component.image %}
 <section component-id="{{ componentId }}" data-testid="abaq-story"
          class="s-block s-block--full-bg abaq-section abaq-story {{ component.dark_mode ? 'abaq-story--dark' : '' }}">
     <div class="container abaq-story__grid {{ component.image_end ? 'abaq-story__grid--image-end' : '' }}">
         <figure class="abaq-story__media" data-abaq-reveal="clip">
-            <span class="abaq-sheen" aria-hidden="true"></span>
-            <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.story_title') }}" loading="lazy" decoding="async" width="600" height="800">
+            {% if image %}
+                <span class="abaq-sheen" aria-hidden="true"></span>
+                <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.story_title') }}" loading="lazy" decoding="async" width="800" height="1000">
+            {% else %}
+                <span class="abaq-placeholder" aria-hidden="true"><i class="sicon-image"></i></span>
+            {% endif %}
         </figure>
 
         <div class="abaq-story__content">

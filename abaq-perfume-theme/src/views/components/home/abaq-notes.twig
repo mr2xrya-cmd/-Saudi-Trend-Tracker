@@ -3,7 +3,8 @@
 |-------------------------|----------|---------------------------------------------------------------|
 | component.title         | ?string  | Section title                                                 |
 | component.description   | ?string  | Section description                                           |
-| component.image         | ?string  | Featured bottle image                                         |
+| component.image         | ?string  | Featured perfume photo (or cut-out bottle)                    |
+| component.cutout        | bool     | Image has a transparent background (glint + reflection)       |
 | component.top_label     | ?string  | Label for top notes (defaults to translated "Top notes")      |
 | component.top_notes     | ?string  | Comma separated top notes (Arabic comma ، also works)         |
 | component.heart_label   | ?string  | Label for heart notes                                         |
@@ -14,7 +15,7 @@
 | component.cta_url       | ?string  | Button link                                                   |
 | component.image_first   | bool     | Show the image on the start side                              |
 #}
-{% set image = component.image ?: 'images/abaq/hero-bottle.svg' | asset %}
+{% set image = component.image %}
 {% set layers = [
     {key: 'top',   label: component.top_label   ?: trans('blocks.abaq.notes_top'),   notes: component.top_notes},
     {key: 'heart', label: component.heart_label ?: trans('blocks.abaq.notes_heart'), notes: component.heart_notes},
@@ -53,12 +54,24 @@
         </div>
 
         <div class="abaq-notes__visual" data-abaq-reveal>
-            <div class="abaq-notes__rings" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
-                <img src="{{ image }}" alt="{{ component.title ?: trans('blocks.abaq.notes_title') }}" loading="lazy" decoding="async" width="600" height="800">
-                <span class="abaq-glint" aria-hidden="true"></span>
-                <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" loading="lazy" width="600" height="800">
-            </div>
+            {% set alt = component.title ?: trans('blocks.abaq.notes_title') %}
+            {% if image and component.cutout %}
+                <div class="abaq-notes__rings" aria-hidden="true"><span></span><span></span><span></span></div>
+                <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
+                    <img src="{{ image }}" alt="{{ alt }}" loading="lazy" decoding="async" width="600" height="800">
+                    <span class="abaq-glint" aria-hidden="true"></span>
+                    <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" loading="lazy" width="600" height="800">
+                </div>
+            {% else %}
+                <figure class="abaq-frame">
+                    {% if image %}
+                        <img src="{{ image }}" alt="{{ alt }}" loading="lazy" decoding="async" width="800" height="1000">
+                        <span class="abaq-sheen" aria-hidden="true"></span>
+                    {% else %}
+                        <span class="abaq-placeholder" aria-hidden="true"><i class="sicon-image"></i></span>
+                    {% endif %}
+                </figure>
+            {% endif %}
         </div>
     </div>
 </section>

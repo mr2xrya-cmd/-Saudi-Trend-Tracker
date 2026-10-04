@@ -4,19 +4,20 @@
 | component.eyebrow          | ?string  | Small label above the title                                      |
 | component.title            | ?string  | Main headline (each word animates in)                            |
 | component.subtitle         | ?string  | Supporting text                                                  |
-| component.image            | ?string  | Hero product / bottle image (transparent PNG/WebP recommended)   |
+| component.image            | ?string  | Hero photo, or a cut-out bottle when component.cutout is on      |
+| component.cutout           | bool     | Image has a transparent background (enables glint + reflection)  |
 | component.background       | ?string  | Optional background photo                                        |
 | component.cta_text         | ?string  | Primary button label                                             |
 | component.cta_url          | ?string  | Primary button link                                              |
 | component.cta2_text        | ?string  | Secondary button label                                           |
 | component.cta2_url         | ?string  | Secondary button link                                            |
-| component.badges[].text    | string   | Floating scent-note badges around the bottle                     |
+| component.badges[].text    | string   | Scent-note labels around a cut-out bottle (cutout mode only)     |
 | component.light_mode       | bool     | Light (ivory) background instead of the dark one                 |
 | component.show_mist        | bool     | Animated scent mist behind the bottle                            |
 | component.show_scroll_hint | bool     | Scroll indicator at the bottom                                   |
 | position                   | int      | Sorting number start from zero                                   |
 #}
-{% set image = component.image ?: 'images/abaq/hero-bottle.svg' | asset %}
+{% set image = component.image %}
 {% set title = component.title ?: trans('blocks.abaq.hero_default_title') %}
 <section component-id="{{ componentId }}" data-testid="abaq-hero"
          class="s-block s-block--full-bg abaq-hero {{ component.light_mode ? 'abaq-hero--light' : 'abaq-hero--dark' }}">
@@ -60,14 +61,25 @@
         </div>
 
         <div class="abaq-hero__visual">
-            <div class="abaq-hero__spot" aria-hidden="true"></div>
-            <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
-                <img class="abaq-hero__bottle" src="{{ image }}" alt="{{ title }}"
-                     width="600" height="800" fetchpriority="high" decoding="async">
-                <span class="abaq-glint" aria-hidden="true"></span>
-                <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" width="600" height="800" decoding="async">
-            </div>
-            {% for badge in component.badges %}
+            {% if image and component.cutout %}
+                <div class="abaq-hero__spot" aria-hidden="true"></div>
+                <div class="abaq-product-shot" style="--abaq-img: url('{{ image }}');">
+                    <img class="abaq-hero__bottle" src="{{ image }}" alt="{{ title }}"
+                         width="600" height="800" fetchpriority="high" decoding="async">
+                    <span class="abaq-glint" aria-hidden="true"></span>
+                    <img class="abaq-reflection" src="{{ image }}" alt="" aria-hidden="true" width="600" height="800" decoding="async">
+                </div>
+            {% else %}
+                <figure class="abaq-frame abaq-hero__frame">
+                    {% if image %}
+                        <img src="{{ image }}" alt="{{ title }}" width="800" height="1000" fetchpriority="high" decoding="async">
+                        <span class="abaq-sheen" aria-hidden="true"></span>
+                    {% else %}
+                        <span class="abaq-placeholder" aria-hidden="true"><i class="sicon-image"></i></span>
+                    {% endif %}
+                </figure>
+            {% endif %}
+            {% for badge in component.cutout ? component.badges : [] %}
                 {% if badge.text %}
                     <span class="abaq-badge abaq-badge--{{ loop.index0 % 4 }}" style="--i:{{ loop.index0 }}">{{ badge.text }}</span>
                 {% endif %}

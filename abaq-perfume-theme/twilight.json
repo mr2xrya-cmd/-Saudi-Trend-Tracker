@@ -416,13 +416,25 @@
                     "type": "string",
                     "format": "image",
                     "id": "image",
-                    "label": "صورة زجاجة العطر",
+                    "label": "صورة العطر",
                     "icon": "sicon-image",
                     "value": null,
                     "placeholder": null,
-                    "description": "* يفضّل صورة بخلفية شفافة بصيغة WebP أو PNG، المقاس المناسب 600×800 بكسل",
+                    "description": "* المقاس المناسب 800×1000 بكسل (صورة عمودية)",
                     "required": false,
                     "key": "680c4143-8820-58fa-a151-fa3cedfb5860"
+                },
+                {
+                    "type": "boolean",
+                    "format": "switch",
+                    "id": "cutout",
+                    "label": "الصورة بخلفية شفافة (PNG أو WebP)",
+                    "icon": "sicon-toggle-off",
+                    "description": "فعّلها إذا كانت صورة الزجاجة مقصوصة بدون خلفية، عشان تظهر لمعة الزجاج والانعكاس على الأرض",
+                    "required": false,
+                    "value": false,
+                    "selected": false,
+                    "key": "cd195fb6-5c7f-522a-bd64-1b5eb1f2ecb6"
                 },
                 {
                     "type": "string",
@@ -610,8 +622,8 @@
                     "type": "collection",
                     "format": "collection",
                     "id": "badges",
-                    "label": "شارات النوتات العطرية",
-                    "item_label": "شارة",
+                    "label": "أسماء النوتات حول الزجاجة (تظهر مع الصورة الشفافة فقط)",
+                    "item_label": "نوتة",
                     "icon": "sicon-list-add",
                     "required": false,
                     "minLength": 0,
@@ -886,8 +898,8 @@
                             "items.description": "حلو ودافئ، مثالي للمساء."
                         },
                         {
-                            "items.name": "الفريش",
-                            "items.description": "منعش وخفيف لأيام الصيف."
+                            "items.name": "المسك",
+                            "items.description": "نظيف وناعم، يلازمك طول اليوم."
                         }
                     ],
                     "fields": [
@@ -1090,9 +1102,21 @@
                     "icon": "sicon-image",
                     "value": null,
                     "placeholder": null,
-                    "description": "* يفضّل خلفية شفافة، المقاس المناسب 600×800 بكسل",
+                    "description": "* المقاس المناسب 800×1000 بكسل (صورة عمودية)",
                     "required": false,
                     "key": "6c0fdc2b-885c-589c-a76a-9a11ba3954ea"
+                },
+                {
+                    "type": "boolean",
+                    "format": "switch",
+                    "id": "cutout",
+                    "label": "الصورة بخلفية شفافة (PNG أو WebP)",
+                    "icon": "sicon-toggle-off",
+                    "description": "فعّلها إذا كانت الصورة مقصوصة بدون خلفية، عشان تظهر لمعة الزجاج والانعكاس",
+                    "required": false,
+                    "value": false,
+                    "selected": false,
+                    "key": "1f15a202-43de-5bca-973a-b635aa559fd4"
                 },
                 {
                     "type": "string",

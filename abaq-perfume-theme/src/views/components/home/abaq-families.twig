@@ -10,7 +10,6 @@
 | component.items[].tag         | ?string  | Small label on the card (e.g. Best seller)          |
 | component.tilt                | bool     | Subtle 3D tilt on hover (desktop only)              |
 #}
-{% set fallbacks = ['bottle-oud', 'bottle-rose', 'bottle-amber', 'bottle-fresh', 'bottle-musk'] %}
 <section component-id="{{ componentId }}" data-testid="abaq-families" class="s-block s-block--full-bg abaq-section abaq-families">
     <div class="container">
         <header class="abaq-heading" data-abaq-reveal>
@@ -21,11 +20,14 @@
 
         <div class="abaq-families__grid {{ component.tilt is not same as(false) ? 'abaq-tilt-group' : '' }}">
             {% for item in component.items %}
-                {% set img = item.image ?: ('images/abaq/' ~ fallbacks[loop.index0 % 5] ~ '.svg') | asset %}
                 <a href="{{ item.url ?: '#' }}" class="abaq-family-card" data-abaq-reveal style="--i:{{ loop.index0 }}">
                     <div class="abaq-family-card__media">
-                        <img src="{{ img }}" alt="{{ item.name }}" loading="lazy" decoding="async" width="600" height="800">
-                        <span class="abaq-sheen" aria-hidden="true"></span>
+                        {% if item.image %}
+                            <img src="{{ item.image }}" alt="{{ item.name }}" loading="lazy" decoding="async" width="600" height="840">
+                            <span class="abaq-sheen" aria-hidden="true"></span>
+                        {% else %}
+                            <span class="abaq-placeholder" aria-hidden="true"><i class="sicon-image"></i></span>
+                        {% endif %}
                     </div>
                     {% if item.tag %}<span class="abaq-family-card__tag">{{ item.tag }}</span>{% endif %}
                     <div class="abaq-family-card__body">
